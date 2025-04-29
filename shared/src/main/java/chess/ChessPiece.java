@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import static chess.ChessPiece.PieceType.*;
 
 /**
  * Represents a single chess piece
@@ -219,19 +220,48 @@ public class ChessPiece {
         }
         if (type == PieceType.PAWN) {
             int forward = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
-            int[][] pawnOffsets = {
-                    {forward, 0},
-                    {forward, -1},
-                    {forward, 1},
-            };
-            for (int step = 1; step <= 2; step++) {
-                int nextRow = myPosition.getRow() + forward * step;
-                int newCol = myPosition.getColumn();
+            int startRow = (pieceColor == ChessGame.TeamColor.WHITE) ? 2 : 7;
+            int promotionRow = (pieceColor == ChessGame.TeamColor.WHITE) ? 8 : 1;
 
-                if (step == 2 && myPosition.getRow() != (pieceColor == ChessGame.TeamColor.WHITE ? 2 : 7))
-                    break;
+            int r = myPosition.getRow(), c = myPosition.getColumn();
+            int r1 = r + forward;
+            ChessPosition oneAhead = new ChessPosition(r1, c);
 
-                if (!onBoard(nextRow, newCol)) break;
+            if (onBoard(r1, c) && board.getPiece(oneAhead) == null){
+                if (r1 == promotionRow){
+                    for (PieceType promo : new PieceType[]{KNIGHT, QUEEN, BISHOP, ROOK }) {
+                        moves.add(new ChessMove(myPosition, oneAhead, promo));
+                    }
+                } else{
+                    moves.add(new ChessMove(myPosition, oneAhead, null));
+
+                    if (r == startRow){
+                        int r2 = r + 2 * forward;
+                        ChessPosition twoAhead = new ChessPosition(r2, c);
+                        if (onBoard(r2, c) && board.getPiece(twoAhead) == null) {
+                            moves.add(new ChessMove(myPosition, twoAhead, null));
+                        }
+                    }
+                }
+            }
+            for (int dc : new int[]{-1, +1}) {
+                int nc = c + dc, nr = r + forward;
+
+                if (!onBoard(nr, nc)) continue;
+                ChessPosition target = new ChessPosition(nr, nc);
+                ChessPiece victim = board.getPiece(target);
+
+                if (victim != null && victim.getTeamColor() != pieceColor) {
+                    if (nr == promotionRow) {
+
+                        for (PieceType promo : new PieceType[]{KNIGHT, BISHOP, ROOK, QUEEN}) {
+                            moves.add(new ChessMove(myPosition, target, promo));
+                        }
+                    } else {
+                        moves.add(new ChessMove(myPosition, target, null));
+                    }
+                }
+
 
             }
         }
