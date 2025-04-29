@@ -92,5 +92,10 @@ public class ChessBoard {
         addPiece(new ChessPosition(8, 8),
                 new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK));
 
+        //black: pawn pieces
+        for (int c = 1; c <= 8; c++) {
+            addPiece(new ChessPosition(7, c),
+                    new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
+        }
     }
 }
