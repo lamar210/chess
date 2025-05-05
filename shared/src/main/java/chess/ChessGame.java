@@ -109,6 +109,56 @@ public class ChessGame {
         return legal;
     }
 
+    private Collection<ChessMove> validMovesForColor(ChessPosition startPosition, TeamColor colorToCheck) {
+        ChessPiece piece = board.getPiece(startPosition);
+
+        if (piece == null || piece.getTeamColor() != colorToCheck)
+            return new ArrayList<>();
+
+        Collection<ChessMove> raw = piece.pieceMoves(board, startPosition);
+        List<ChessMove> legal = new ArrayList<>();
+
+        for (ChessMove m : raw) {
+            ChessPiece destBefore = board.getPiece(m.getEndPosition());
+
+            board.addPiece(startPosition, null);
+
+            ChessPiece moved = piece;
+            if (m.getPromotionPiece() != null) {
+                moved = new ChessPiece(piece.getTeamColor(), m.getPromotionPiece());
+            }
+            board.addPiece(m.getEndPosition(), moved);
+
+            boolean inCheck = isInCheck(colorToCheck);
+
+            board.addPiece(startPosition, piece);
+            board.addPiece(m.getEndPosition(), destBefore);
+
+            if (!inCheck) {
+                legal.add(m);
+            }
+        }
+        return legal;
+    }
+
+    private boolean noValidMoves(TeamColor colorToCheck) {
+        for (int r = 1; r <= 8; r++) {
+            for (int c = 1; c <= 8; c++) {
+                ChessPosition pos = new ChessPosition(r, c);
+                ChessPiece piece = board.getPiece(pos);
+                if (piece != null && piece.getTeamColor() == colorToCheck) {
+                    Collection<ChessMove> moves = validMovesForColor(pos, colorToCheck);
+                    if (moves != null && !moves.isEmpty()) {
+                        return false; // there's at least one legal move!
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+
+
     /**
      * Makes a move in a chess game
      *
@@ -188,23 +238,25 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (!isInCheck(teamColor))
-            return false;
+//        if (!isInCheck(teamColor))
+//            return false;
+//
+//        for (int r = 1; r <= 8; r++){
+//            for (int c = 1; c <= 8; c++){
+//                ChessPosition pos = new ChessPosition(r,c);
+//                ChessPiece p = board.getPiece(pos);
+//
+//                if (p != null && p.getTeamColor() == teamColor){
+//                    Collection<ChessMove> moves = validMoves(pos);
+//                    if (moves != null && !moves.isEmpty()){
+//                        return false;
+//                    }
+//                }
+//            }
+//        }
+//        return true;
+        return isInCheck(teamColor) && noValidMoves(teamColor);
 
-        for (int r = 1; r <= 8; r++){
-            for (int c = 1; c <= 8; c++){
-                ChessPosition pos = new ChessPosition(r,c);
-                ChessPiece p = board.getPiece(pos);
-
-                if (p != null && p.getTeamColor() == teamColor){
-                    Collection<ChessMove> moves = validMoves(pos);
-                    if (moves != null && !moves.isEmpty()){
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
     }
 
     /**
@@ -229,7 +281,7 @@ public class ChessGame {
                 ChessPiece p = board.getPiece(pos);
 
                 if (p != null && p.getTeamColor() == teamColor){
-                    Collection<ChessMove> moves = validMoves(pos);
+                    Collection<ChessMove> moves = validMovesForColor(pos, teamColor);
                     if (moves != null && !moves.isEmpty()){
                         return false;
                     }
@@ -258,17 +310,4 @@ public class ChessGame {
 
         return board;
     }
-
-//    public static void main(String[] args) {
-//        ChessGame g = new ChessGame();      // make sure resetBoard() is called in your constructor!
-//        ChessPosition e2 = new ChessPosition(2, 5);
-//        ChessPiece pawn = g.getBoard().getPiece(e2);
-//
-//        Collection<ChessMove> raw   = pawn.pieceMoves(g.getBoard(), e2);
-//        System.out.println("raw moves from e2:   " + raw);
-//
-//        Collection<ChessMove> legal = g.validMoves(e2);
-//        System.out.println("validMoves from e2: " + legal);
-//    }
-
 }
