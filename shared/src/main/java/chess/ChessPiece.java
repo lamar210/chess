@@ -238,7 +238,8 @@ public class ChessPiece {
                     if (r == startRow){
                         int r2 = r + 2 * forward;
                         ChessPosition twoAhead = new ChessPosition(r2, c);
-                        if (onBoard(r2, c) && board.getPiece(twoAhead) == null) {
+                        ChessPosition between = new ChessPosition(r + forward, c);
+                        if (onBoard(r2, c) && board.getPiece(twoAhead) == null && board.getPiece(between) == null) {
                             moves.add(new ChessMove(myPosition, twoAhead, null));
                         }
                     }

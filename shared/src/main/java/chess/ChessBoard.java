@@ -26,7 +26,11 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
 
-        board.put(position, piece);
+        if (piece == null) {
+            board.remove(position);
+        } else {
+            board.put(position, piece);
+        }
     }
 
     /**
