@@ -79,10 +79,9 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
+
         if (piece == null)
-            return null;
-        if (piece.getTeamColor() != teamTurn)
-            return null;
+            return new ArrayList<>();
 
         Collection<ChessMove> raw = piece.pieceMoves(board, startPosition);
 
@@ -97,7 +96,7 @@ public class ChessGame {
             }
             board.addPiece(m.getEndPosition(), moved);
 
-            boolean inCheck = isInCheck(teamTurn);
+            boolean inCheck = isInCheck(piece.getTeamColor());
 
             board.addPiece(startPosition, piece);
             board.addPiece(m.getEndPosition(), destBefore);
