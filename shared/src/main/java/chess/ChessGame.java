@@ -115,9 +115,12 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+
+
+
         Collection<ChessMove> options = validMoves(move.getStartPosition());
 
-        if (options == null || !options.contains(move)) {
+        if (options == null || !options.contains(move) || board.getPiece(move.getStartPosition()).getTeamColor() != teamTurn) {
             throw new InvalidMoveException("Illegal move: " + move);
         }
 
