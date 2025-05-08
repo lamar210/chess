@@ -12,9 +12,9 @@ import java.util.List;
 
 public class InMemoryDAO implements DataAccess{
 
-    Map<String, UserData> users;
-    Map<Integer, GameData> games;
-    Map<String, AuthData> auths;
+    private final Map<String, UserData> users;
+    private final Map<Integer, GameData> games;
+    private final Map<String, AuthData> auths;
 
     public InMemoryDAO() {
         this.users = new HashMap<>();

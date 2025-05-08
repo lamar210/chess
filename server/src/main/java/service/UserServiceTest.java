@@ -51,20 +51,12 @@ public class UserServiceTest {
 
     @Test
     void success_logout() throws DataAccessException{
-        service.register(new RegisterRequest("lamar","pw","hell@.com"));
-        LoginResult result = service.login(new LoginRequest("lamar","pw"));
+        service.register(new RegisterRequest("lamar", "pw", "hell@.com"));
+        LoginResult result = service.login(new LoginRequest("lamar", "pw"));
         assertDoesNotThrow(() -> dao.getAuth(result.authToken()));
-
-        String token = result.authToken();
-        service.logout(new LogoutRequest(token));
-        assertThrows(DataAccessException.class, () -> dao.getAuth(token));
+        service.logout(new LogoutRequest(result.authToken()));
+        assertThrows(DataAccessException.class, () -> dao.getAuth(result.authToken()));
     }
 
-    @Test
-    void sanity_login_persists_token() throws DataAccessException {
-        service.register(new RegisterRequest("lamar","pw","hell@.com"));
-        LoginResult r = service.login(new LoginRequest("lamar","pw"));
-        assertDoesNotThrow(() -> dao.getAuth(r.authToken()));
-    }
 
 }

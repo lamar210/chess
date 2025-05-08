@@ -48,7 +48,7 @@ public class UserService {
         }
 
         String token = UUID.randomUUID().toString();
-        dao.createAuth(new AuthData(token, req.username()));
+        dao.createAuth(new AuthData(req.username(), token));
 
         return new LoginResult(req.username(), token);
 
