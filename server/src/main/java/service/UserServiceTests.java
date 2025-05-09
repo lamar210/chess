@@ -5,7 +5,7 @@ import dataaccess.InMemoryDAO;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class UserServiceTest {
+public class UserServiceTests {
 
     private InMemoryDAO dao;
     private UserService service;
