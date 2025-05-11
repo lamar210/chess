@@ -4,6 +4,7 @@ import model.GameData;
 import model.AuthData;
 import dataaccess.DataAccessException;
 import dataaccess.InMemoryDAO;
+
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -72,7 +73,7 @@ public class GameServiceTests {
 
     @Test
     void getGame_notFound() {
-    assertThrows(DataAccessException.class,() -> service.getGame(99));
+        assertThrows(DataAccessException.class, () -> service.getGame(99));
     }
 
     @Test
@@ -85,4 +86,20 @@ public class GameServiceTests {
         assertEquals(3, service.listGames().size());
     }
 
+    @Test
+    void success_joinGame() throws DataAccessException {
+        String token = UUID.randomUUID().toString();
+        dao.createAuth(new AuthData(token, "rick"));
+
+        String mortyToken = UUID.randomUUID().toString();
+        dao.createAuth(new AuthData(mortyToken, "morty"));
+
+        service.createGame(new CreateGameReq(1, "morty", null, "g", mortyToken));
+
+        service.joinGame(new JoinGameReq(1, JoinGameReq.Color.BLACK, token));
+
+        GameData updated = dao.getGame(1);
+        assertEquals("morty", updated.whiteUsername());
+        assertEquals("rick", updated.blackUsername());
+    }
 }
