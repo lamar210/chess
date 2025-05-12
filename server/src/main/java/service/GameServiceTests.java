@@ -102,4 +102,59 @@ public class GameServiceTests {
         assertEquals("morty", updated.whiteUsername());
         assertEquals("rick", updated.blackUsername());
     }
+
+    @Test
+    void fail_joinGame_NULL_ID() {
+        assertThrows(DataAccessException.class, () -> service.joinGame(new JoinGameReq(null, JoinGameReq.Color.WHITE, "token")));
+    }
+
+    @Test
+    void fail_joinGame_NULL_COLOR() throws DataAccessException{
+        String token = UUID.randomUUID().toString();
+        dao.createAuth(new AuthData(token,"u"));
+        assertThrows(DataAccessException.class, () -> service.joinGame(new JoinGameReq(1, null, token)));
+    }
+
+    @Test
+    void fail_joinGame_NULL_TOKEN() {
+        assertThrows(DataAccessException.class, () -> service.joinGame(new JoinGameReq(1, JoinGameReq.Color.WHITE, null)));
+    }
+
+    @Test
+    void fail_joinGame_invalid_TOKEN() {
+        String bad = "def-not-a-token";
+        assertThrows(DataAccessException.class, () -> service.joinGame(new JoinGameReq(1, JoinGameReq.Color.WHITE, bad)));
+    }
+
+    @Test
+    void fail_joinGame_gameNotFound() throws DataAccessException{
+        String token = UUID.randomUUID().toString();
+        dao.createAuth(new AuthData(token,"u"));
+        assertThrows(DataAccessException.class, () -> service.joinGame(new JoinGameReq(101, JoinGameReq.Color.WHITE, token)));
+    }
+
+    @Test
+    void fail_joinGame_whiteAlreadyTaken() throws DataAccessException {
+        String t1 = UUID.randomUUID().toString();
+        dao.createAuth(new AuthData(t1,"alice"));
+        service.createGame(new CreateGameReq(1,"alice",null,"wonderland",t1));
+
+        String t2 = UUID.randomUUID().toString();
+        dao.createAuth(new AuthData(t2,"bob"));
+        assertThrows(DataAccessException.class, () -> service.joinGame(new JoinGameReq(1,JoinGameReq.Color.WHITE,t2)));
+    }
+
+    @Test
+    void fail_joinGame_blackAlreadyTaken_whenBlackPreassigned() throws DataAccessException {
+        String aliceToken = UUID.randomUUID().toString();
+        dao.createAuth(new AuthData(aliceToken, "alice"));
+        service.createGame(new CreateGameReq(1, null, "alice", "wonderland", aliceToken));
+        String bobToken = UUID.randomUUID().toString();
+        dao.createAuth(new AuthData(bobToken, "bob"));
+        assertThrows(DataAccessException.class, () -> service.joinGame(new JoinGameReq(1, JoinGameReq.Color.BLACK, bobToken))
+        );
+    }
+
+
+
 }

@@ -21,14 +21,14 @@ public class GameService {
     }
 
     public CreateGameResult createGame(CreateGameReq req) throws DataAccessException{
-        if (req.gameID() == null || req.whiteUsername() == null || req.authToken() == null){
+        if (req.gameID() == null || req.authToken() == null){
             throw new DataAccessException("Bad request");
         }
 
         dao.getAuth(req.authToken());
 
         ChessGame newBoard = new ChessGame();
-        GameData gd = new GameData(req.gameID(), req.whiteUsername(), null, req.gameName(), newBoard);
+        GameData gd = new GameData(req.gameID(), req.whiteUsername(), req.blackUsername(), req.gameName(), newBoard);
         dao.createGame(gd);
 
         return new CreateGameResult(gd.gameID());
