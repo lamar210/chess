@@ -186,7 +186,9 @@ public class ChessPiece {
 
         for (int dc : new int[]{-1, 1}) {
             int nc = c + dc, nr = r + forward;
-            if (!onBoard(nr, nc)) continue;
+            if (!onBoard(nr, nc)) {
+                continue;
+            }
 
             ChessPosition target = new ChessPosition(nr, nc);
             ChessPiece victim = board.getPiece(target);

@@ -173,17 +173,25 @@ public class ChessGame {
             }
         }
 
-        if (kingP == null) return false;
+        if (kingP == null) {
+            return false;
+        }
 
         for (int r = 1; r <= 8; r++) {
             for (int c = 1; c <= 8; c++) {
                 ChessPosition from = new ChessPosition(r, c);
                 ChessPiece attacker = board.getPiece(from);
 
-                if (attacker == null) continue;
-                if (attacker.getTeamColor() == teamColor) continue;
+                if (attacker == null) {
+                    continue;
+                }
+                if (attacker.getTeamColor() == teamColor) {
+                    continue;
+                }
 
-                if (attacksKing(attacker, from, kingP)) return true;
+                if (attacksKing(attacker, from, kingP)) {
+                    return true;
+                }
             }
         }
 
@@ -230,8 +238,12 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        if (teamColor != teamTurn) return false;
-        if (isInCheck(teamColor)) return false;
+        if (teamColor != teamTurn) {
+            return false;
+        }
+        if (isInCheck(teamColor)) {
+            return false;
+        }
         return hasNoValidMoves(teamColor);
     }
 
