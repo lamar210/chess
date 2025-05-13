@@ -80,8 +80,9 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
 
-        if (piece == null)
+        if (piece == null) {
             return new ArrayList<>();
+        }
 
         Collection<ChessMove> raw = piece.pieceMoves(board, startPosition);
 
@@ -139,48 +140,56 @@ public class ChessGame {
 
     }
 
+    private boolean attacksKing(ChessPiece attacker, ChessPosition from, ChessPosition kingPos) {
+        for (ChessMove move : attacker.pieceMoves(board, from)) {
+            if (move.getEndPosition().equals(kingPos)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Determines if the given team is in check
      *
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
-    public boolean isInCheck(TeamColor teamColor) {
 
+    public boolean isInCheck(TeamColor teamColor) {
         ChessPosition kingP = null;
-        boolean foundKing = false;
-        for (int r = 1; r <= 8 && !foundKing; r++) {
-            for (int c = 1; c <= 8; c++){
+
+        for (int r = 1; r <= 8 && kingP == null; r++) {
+            for (int c = 1; c <= 8; c++) {
                 ChessPosition p = new ChessPosition(r, c);
                 ChessPiece occupant = board.getPiece(p);
 
-                if (occupant != null && occupant.getTeamColor() == teamColor && occupant.getPieceType() == ChessPiece.PieceType.KING){
+                if (occupant != null &&
+                        occupant.getTeamColor() == teamColor &&
+                        occupant.getPieceType() == ChessPiece.PieceType.KING) {
                     kingP = p;
-                    foundKing = true;
                     break;
                 }
             }
         }
-        if (kingP == null){
-            return false;
-        }
-        for (int r = 1; r <= 8; r++){
-            for (int c = 1; c <= 8; c++){
+
+        if (kingP == null) return false;
+
+        for (int r = 1; r <= 8; r++) {
+            for (int c = 1; c <= 8; c++) {
                 ChessPosition from = new ChessPosition(r, c);
                 ChessPiece attacker = board.getPiece(from);
 
-                if (attacker != null && attacker.getTeamColor() != teamColor){
+                if (attacker == null) continue;
+                if (attacker.getTeamColor() == teamColor) continue;
 
-                    for (ChessMove mv : attacker.pieceMoves(board, from)) {
-                        if (mv.getEndPosition().equals(kingP)) {
-                            return true;
-                        }
-                    }
-                }
+                if (attacksKing(attacker, from, kingP)) return true;
             }
         }
+
         return false;
     }
+
 
     /**
      * Determines if the given team is in checkmate
@@ -207,7 +216,9 @@ public class ChessGame {
     }
 
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (!isInCheck(teamColor)) return false;
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
         return hasNoValidMoves(teamColor);
     }
 
