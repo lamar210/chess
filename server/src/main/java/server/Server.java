@@ -59,6 +59,9 @@ public class Server {
 
             delete("/session", (req, res) -> {
                 String token = req.headers("authorization");
+                if (token == null) {
+                    throw new DataAccessException("Unauthorized");
+                }
                 userService.logout(new LogoutRequest(token));
                 res.type("application/json");
                 return "{}";
@@ -99,10 +102,10 @@ public class Server {
             });
 
             put ("/game", (req, res) -> {
-               String token = req.headers("authorization");
-               if (token == null){
+                String token = req.headers("authorization");
+                if (token == null){
                    throw new DataAccessException("Unauthorized");
-               }
+                }
                 dao.getAuth(token);
 
                 @SuppressWarnings("unchecked")
@@ -111,11 +114,17 @@ public class Server {
                 String color  = (String) body.get("playerColor");
                 if (gameID == null || color == null) throw new DataAccessException("Bad request");
 
-               var joinReq = new JoinGameReq(gameID.intValue(), JoinGameReq.Color.valueOf(color.toUpperCase()), token);
-               gameService.joinGame(joinReq);
+                String norm = color.trim().toUpperCase();
+                if (!norm.equals("WHITE") && !norm.equals("BLACK")) {
+                    throw new DataAccessException("Bad request");
+                }
 
-               res.type("application/json");
-               return "{}";
+                var joinReq = new JoinGameReq(gameID.intValue(), JoinGameReq.Color.valueOf(norm), token);
+
+                gameService.joinGame(joinReq);
+
+                res.type("application/json");
+                return "{}";
             });
 
 
