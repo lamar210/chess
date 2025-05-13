@@ -34,12 +34,20 @@ public class Server {
             res.type("application/json");
             String msg = ex.getMessage().toLowerCase();
 
-            if (msg.contains("bad request")) res.status(400);
+            if (msg.contains("bad request")) {
+                res.status(400);
+            }
             else if (msg.contains("unauthorized") || msg.contains("not found")
                     || msg.contains("invalid token") || msg.contains("invalid auth")
-                    || msg.contains("user not found")) res.status(401);
-            else if (msg.contains("already")) res.status(403);
-            else res.status(500);
+                    || msg.contains("user not found")) {
+                res.status(401);
+            }
+            else if (msg.contains("already")) {
+                res.status(403);
+            }
+            else {
+                res.status(500);
+            }
 
             res.body(gson.toJson(Map.of("message", "Error: " + ex.getMessage())));
         });
@@ -68,7 +76,9 @@ public class Server {
 
         delete("/session", (req, res) -> {
             String token = req.headers("authorization");
-            if (token == null) throw new DataAccessException("Unauthorized");
+            if (token == null) {
+                throw new DataAccessException("Unauthorized");
+            }
             userService.logout(new LogoutRequest(token));
             res.type("application/json");
             return "{}";
@@ -76,7 +86,9 @@ public class Server {
 
         get("/game", (req, res) -> {
             String token = req.headers("authorization");
-            if (token == null) throw new DataAccessException("Unauthorized");
+            if (token == null) {
+                throw new DataAccessException("Unauthorized");
+            }
             dao.getAuth(token);
             var games = gameService.listGames();
             res.type("application/json");
@@ -91,7 +103,9 @@ public class Server {
             @SuppressWarnings("unchecked")
             Map<String, ?> body = gson.fromJson(req.body(), Map.class);
             String gameName = (String) body.get("gameName");
-            if (gameName == null) throw new DataAccessException("Bad request");
+            if (gameName == null) {
+                throw new DataAccessException("Bad request");
+            }
 
             int newID = dao.nextGameID();
             var svcReq = new CreateGameReq(newID, null, null, gameName, token);
@@ -103,7 +117,9 @@ public class Server {
 
         put("/game", (req, res) -> {
             String token = req.headers("authorization");
-            if (token == null) throw new DataAccessException("Unauthorized");
+            if (token == null) {
+                throw new DataAccessException("Unauthorized");
+            }
 
             dao.getAuth(token);
             @SuppressWarnings("unchecked")
