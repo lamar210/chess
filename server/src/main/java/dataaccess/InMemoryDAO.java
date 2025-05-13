@@ -9,12 +9,13 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 
-
 public class InMemoryDAO implements DataAccess{
 
     private final Map<String, UserData> users;
     private final Map<Integer, GameData> games;
     private final Map<String, AuthData> auths;
+    private int nextID = 1;
+
 
     public InMemoryDAO() {
         this.users = new HashMap<>();
@@ -108,5 +109,10 @@ public class InMemoryDAO implements DataAccess{
         if (auths.remove(authToken) == null) {
             throw new DataAccessException("Token not found");
         }
+    }
+
+    @Override
+    public int nextGameID() {
+        return nextID++;
     }
 }
