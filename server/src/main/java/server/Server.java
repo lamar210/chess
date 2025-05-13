@@ -93,7 +93,7 @@ public class Server {
                 }
 
                 int newID = dao.nextGameID();
-                var svcReq = new CreateGameReq(newID, null, auth.username(), gameName, token);
+                var svcReq = new CreateGameReq(newID, null, null, gameName, token);
                 CreateGameResult result = gameService.createGame(svcReq);
 
                 res.type("application/json");
