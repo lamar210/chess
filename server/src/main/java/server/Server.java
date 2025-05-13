@@ -97,7 +97,9 @@ public class Server {
 
         post("/game", (req, res) -> {
             String token = req.headers("authorization");
-            if (token == null) throw new DataAccessException("Unauthorized");
+            if (token == null) {
+                throw new DataAccessException("Unauthorized");
+            }
 
             var auth = dao.getAuth(token);
             @SuppressWarnings("unchecked")
