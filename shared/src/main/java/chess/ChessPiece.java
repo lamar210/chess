@@ -105,6 +105,16 @@ public class ChessPiece {
         }
     }
 
+    private void tryAddMove(ChessBoard board, ChessPosition from, int row, int col, List<ChessMove> moves) {
+        if (onBoard(row, col)) {
+            ChessPosition dest = new ChessPosition(row, col);
+            ChessPiece occupant = board.getPiece(dest);
+            if (occupant == null || occupant.getTeamColor() != pieceColor) {
+                moves.add(new ChessMove(from, dest, null));
+            }
+        }
+    }
+
     private void generateRookMoves(ChessBoard board, ChessPosition pos, List<ChessMove> moves) {
         int[][] dirs = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
         addSlidingMoves(board, pos, moves, dirs);
@@ -130,18 +140,10 @@ public class ChessPiece {
         };
 
         for (int[] off : offsets) {
-            int row = pos.getRow() + off[0];
-            int col = pos.getColumn() + off[1];
-
-            if (onBoard(row, col)) {
-                ChessPosition dest = new ChessPosition(row, col);
-                ChessPiece occupant = board.getPiece(dest);
-                if (occupant == null || occupant.getTeamColor() != pieceColor) {
-                    moves.add(new ChessMove(pos, dest, null));
-                }
-            }
+            tryAddMove(board, pos, pos.getRow() + off[0], pos.getColumn() + off[1], moves);
         }
     }
+
 
     private void generateKnightMoves(ChessBoard board, ChessPosition pos, List<ChessMove> moves) {
         int[][] offsets = {
@@ -150,18 +152,10 @@ public class ChessPiece {
         };
 
         for (int[] off : offsets) {
-            int row = pos.getRow() + off[0];
-            int col = pos.getColumn() + off[1];
-
-            if (onBoard(row, col)) {
-                ChessPosition dest = new ChessPosition(row, col);
-                ChessPiece occupant = board.getPiece(dest);
-                if (occupant == null || occupant.getTeamColor() != pieceColor) {
-                    moves.add(new ChessMove(pos, dest, null));
-                }
-            }
+            tryAddMove(board, pos, pos.getRow() + off[0], pos.getColumn() + off[1], moves);
         }
     }
+
 
     private void generatePawnMoves(ChessBoard board, ChessPosition pos, List<ChessMove> moves) {
         int forward = (pieceColor == ChessGame.TeamColor.WHITE) ? 1 : -1;
