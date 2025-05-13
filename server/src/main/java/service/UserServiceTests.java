@@ -17,13 +17,13 @@ public class UserServiceTests {
     }
 
     @Test
-    void fail_register() throws DataAccessException{
+    void failRegister() throws DataAccessException{
         service.register(new RegisterRequest("lamar", "pw", "hell@.com"));
         assertThrows(DataAccessException.class, () -> service.register(new RegisterRequest("lamar", "pw", "hell@.com")));
     }
 
     @Test
-    void success_register() throws DataAccessException{
+    void successRegister() throws DataAccessException{
         RegisterResult result = service.register(new RegisterRequest("lamar", "pw", "hell@.com"));
 
         assertEquals("lamar", result.username());
@@ -31,12 +31,12 @@ public class UserServiceTests {
     }
 
     @Test
-    void fail_login() {
+    void failLogin() {
         assertThrows(DataAccessException.class, () -> service.login(new LoginRequest("lamar", "pw")));
     }
 
     @Test
-    void success_login() throws DataAccessException{
+    void successLogin() throws DataAccessException{
         service.register(new RegisterRequest("lamar","pw","hell@.com"));
         LoginResult result = service.login(new LoginRequest("lamar","pw"));
 
@@ -45,12 +45,12 @@ public class UserServiceTests {
     }
 
     @Test
-    void fail_logout(){
+    void failLogout(){
         assertThrows(DataAccessException.class, () -> service.logout(new LogoutRequest("lamar")));
     }
 
     @Test
-    void success_logout() throws DataAccessException{
+    void successLogout() throws DataAccessException{
         service.register(new RegisterRequest("lamar", "pw", "hell@.com"));
         LoginResult result = service.login(new LoginRequest("lamar", "pw"));
         assertDoesNotThrow(() -> dao.getAuth(result.authToken()));
