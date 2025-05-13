@@ -54,7 +54,7 @@ public class UserServiceTests {
         service.register(new RegisterRequest("lamar", "pw", "hell@.com"));
         LoginResult result = service.login(new LoginRequest("lamar", "pw"));
         assertDoesNotThrow(() -> dao.getAuth(result.authToken()));
-        service.logout(new LogoutRequest(result.authToken()));
+        assertDoesNotThrow(() -> service.logout(new LogoutRequest(result.authToken())));
         assertThrows(DataAccessException.class, () -> dao.getAuth(result.authToken()));
     }
 
