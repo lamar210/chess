@@ -35,7 +35,9 @@ public class Server {
             String msg = ex.getMessage().toLowerCase();
 
             if (msg.contains("bad request")) res.status(400);
-            else if (msg.contains("unauthorized") || msg.contains("not found") || msg.contains("invalid token") || msg.contains("invalid auth") || msg.contains("user not found")) res.status(401);
+            else if (msg.contains("unauthorized") || msg.contains("not found")
+                    || msg.contains("invalid token") || msg.contains("invalid auth")
+                    || msg.contains("user not found")) res.status(401);
             else if (msg.contains("already")) res.status(403);
             else res.status(500);
 
@@ -109,7 +111,9 @@ public class Server {
             Number gameID = (Number) body.get("gameID");
             String color = (String) body.get("playerColor");
 
-            if (gameID == null || color == null) throw new DataAccessException("Bad request");
+            if (gameID == null || color == null) {
+                throw new DataAccessException("Bad request");
+            }
 
             String norm = color.trim().toUpperCase();
             if (!norm.equals("WHITE") && !norm.equals("BLACK")) {
