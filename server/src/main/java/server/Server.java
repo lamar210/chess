@@ -2,6 +2,7 @@ package server;
 
 import com.google.gson.GsonBuilder;
 import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
 import dataaccess.InMemoryDAO;
 import service.*;
 import spark.*;
@@ -10,11 +11,19 @@ import java.util.Map;
 
 import static spark.Spark.*;
 
+
 public class Server {
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
         Spark.staticFiles.location("web");
+
+        try {
+            DatabaseManager.createDatabase();
+            DatabaseManager.createTables();
+        } catch (DataAccessException ex) {
+            System.err.println("Error configuring database: " + ex.getMessage());
+        }
 
         var dao = new InMemoryDAO();
         var userService = new UserService(dao);
