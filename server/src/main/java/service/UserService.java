@@ -4,11 +4,7 @@ import dataaccess.DataAccess;
 import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
-import service.RegisterRequest;
-import service.RegisterResult;
-import service.LoginRequest;
-import service.LoginResult;
-import service.LogoutRequest;
+import org.mindrot.jbcrypt.BCrypt;
 
 
 import java.util.UUID;
@@ -37,14 +33,14 @@ public class UserService {
     }
 
     public LoginResult login(LoginRequest req) throws DataAccessException{
-
         if (req.username() == null || req.password() == null){
             throw new DataAccessException("Bad request");
         }
 
-        UserData user = dao.getUser(req.username());
-        if (!user.password().equals(req.password())){
-            throw new DataAccessException("Unauthorized");
+        UserData storedUser = dao.getUser(req.username());
+
+        if (storedUser == null || !BCrypt.checkpw(req.password(), storedUser.password())) {
+            throw new DataAccessException("Invalid credentials");
         }
 
         String token = UUID.randomUUID().toString();
