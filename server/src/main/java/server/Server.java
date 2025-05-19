@@ -1,9 +1,10 @@
 package server;
 
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
-import dataaccess.InMemoryDAO;
+import dataaccess.MYSqlDataAccess;
 import service.*;
 import spark.*;
 
@@ -25,7 +26,7 @@ public class Server {
             System.err.println("Error configuring database: " + ex.getMessage());
         }
 
-        var dao = new InMemoryDAO();
+        var dao = new MYSqlDataAccess();
         var userService = new UserService(dao);
         var gameService = new GameService(dao);
         var gson = new GsonBuilder().serializeNulls().create();
@@ -48,7 +49,7 @@ public class Server {
             }
             else if (msg.contains("unauthorized") || msg.contains("not found")
                     || msg.contains("invalid token") || msg.contains("invalid auth")
-                    || msg.contains("user not found")) {
+                    || msg.contains("user not found") || msg.contains("invalid credentials")) {
                 res.status(401);
             }
             else if (msg.contains("already")) {
@@ -62,7 +63,7 @@ public class Server {
         });
     }
 
-    private void registerRoutes(InMemoryDAO dao, UserService userService, GameService gameService, com.google.gson.Gson gson) {
+    private void registerRoutes(MYSqlDataAccess dao, UserService userService, GameService gameService, Gson gson) {
         delete("/db", (req, res) -> {
             dao.clear();
             res.type("application/json");

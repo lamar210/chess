@@ -42,7 +42,6 @@ public class MYSqlDataAccess implements DataAccess {
             stmt.setString(1, user.username());
             stmt.setString(2, hashedPass);
             stmt.setString(3, user.email());
-            System.out.println("HASHED PASSWORD: " + hashedPass);
             stmt.executeUpdate();
         } catch (SQLException ex) {
             throw new DataAccessException("Could not create user", ex);
@@ -131,17 +130,48 @@ public class MYSqlDataAccess implements DataAccess {
 
     @Override
     public void createAuth(AuthData auth) throws DataAccessException {
-        throw new UnsupportedOperationException("Not yet implemented");
+        String sql = "INSERT INTO auth (authToken, username) VALUES (?,?)";
+
+        try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, auth.authToken());
+            stmt.setString(1, auth.username());
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DataAccessException("Could not insert auth", ex);
+        }
     }
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
-        throw new UnsupportedOperationException("Not yet implemented");
+        String sql = "SELECT * FROM auth WHERE authToken = ?";
+
+        try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, authToken);
+
+            try (var rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    String username = rs.getString("username");
+                    return new AuthData(authToken, username);
+                } else {
+                    return null;
+                }
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("Could not get auth", ex);
+        }
+
     }
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
-        throw new UnsupportedOperationException("Not yet implemented");
+        String sql = "DELETE FROM auth WHERE authToken = ?";
+
+        try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, authToken);
+            stmt.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DataAccessException("Could not delete auth", ex);
+        }
     }
 
     @Override
