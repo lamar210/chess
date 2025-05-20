@@ -55,6 +55,9 @@ public class MySqlDataAccess implements DataAccess {
             stmt.setString(3, user.email());
             stmt.executeUpdate();
         } catch (SQLException ex) {
+            if (ex.getMessage().toLowerCase().contains("duplicate")) {
+                throw new DataAccessException("Error: already taken", ex);
+            }
             throw new DataAccessException("Could not create user", ex);
         }
     }
@@ -115,6 +118,8 @@ public class MySqlDataAccess implements DataAccess {
                     String gameStateJson = rs.getString("gameState");
 
                     Gson gson = new Gson();
+
+                    System.out.println("Raw JSON from DB: " + gameStateJson);
 
                     ChessGame chessGame = gson.fromJson(gameStateJson, ChessGame.class);
 

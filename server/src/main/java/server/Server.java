@@ -112,6 +112,10 @@ public class Server {
             }
 
             var auth = dao.getAuth(token);
+            if (auth == null) {
+                throw new DataAccessException("Unauthorized");
+            }
+
             @SuppressWarnings("unchecked")
             Map<String, ?> body = gson.fromJson(req.body(), Map.class);
             String gameName = (String) body.get("gameName");

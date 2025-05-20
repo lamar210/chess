@@ -60,7 +60,10 @@ public class UserService {
         if (req.authToken() == null){
             throw new DataAccessException("Bad request");
         }
-        dao.getAuth(req.authToken());
+        AuthData auth = dao.getAuth(req.authToken());
+        if (auth == null) {
+            throw new DataAccessException("Unauthorized");
+        }
         dao.deleteAuth(req.authToken());
     }
 }
