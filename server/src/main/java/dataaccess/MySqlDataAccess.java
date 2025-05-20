@@ -10,16 +10,18 @@ import com.google.gson.Gson;
 import java.sql.SQLException;
 import java.util.List;
 
-public class MYSqlDataAccess implements DataAccess {
+import static dataaccess.DatabaseManager.getConnection;
+
+public class MySqlDataAccess implements DataAccess {
 
     private final Gson gson = new Gson();
 
-    public MYSqlDataAccess() {
+    public MySqlDataAccess() {
     }
 
     @Override
     public void clear() throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection();
+        try (var conn = getConnection();
              var stmt1 = conn.prepareStatement("DELETE FROM auth");
              var stmt2 = conn.prepareStatement("DELETE FROM game");
              var stmt3 = conn.prepareStatement("DELETE FROM user")) {
@@ -38,10 +40,11 @@ public class MYSqlDataAccess implements DataAccess {
     public void createUser (UserData user) throws DataAccessException {
         String hashedPass = BCrypt.hashpw(user.password(), BCrypt.gensalt());
 
-        try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement("INSERT INTO user (username, password, email) VALUES (?,?,?)")) {
+        try (var conn = getConnection(); var stmt = conn.prepareStatement("INSERT INTO user (username, password, email) VALUES (?,?,?)")) {
             stmt.setString(1, user.username());
             stmt.setString(2, hashedPass);
             stmt.setString(3, user.email());
+            System.out.println("HASHED PASSWORD: " + hashedPass);
             stmt.executeUpdate();
         } catch (SQLException ex) {
             throw new DataAccessException("Could not create user", ex);
@@ -52,7 +55,7 @@ public class MYSqlDataAccess implements DataAccess {
     public UserData getUser(String username) throws DataAccessException {
         String query = "SELECT * FROM user WHERE username = ?";
 
-        try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(query)) {
+        try (var conn = getConnection(); var stmt = conn.prepareStatement(query)) {
             stmt.setString(1, username);
 
             try (var rs = stmt.executeQuery()) {
@@ -78,7 +81,7 @@ public class MYSqlDataAccess implements DataAccess {
         Gson gson = new Gson();
         String gameStateJson = gson.toJson(game.game());
 
-        try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(insert)) {
+        try (var conn = getConnection(); var stmt = conn.prepareStatement(insert)) {
             stmt.setInt(1, game.gameID());
             stmt.setString(2, game.gameName());
             stmt.setString(3, game.whiteUsername());
@@ -94,7 +97,7 @@ public class MYSqlDataAccess implements DataAccess {
     public GameData getGame(int gameID) throws DataAccessException {
         String query = "SELECT * FROM game WHERE gameID = ?";
 
-        try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(query)) {
+        try (var conn = getConnection(); var stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, gameID);
 
             try (var rs = stmt.executeQuery()) {
@@ -132,9 +135,9 @@ public class MYSqlDataAccess implements DataAccess {
     public void createAuth(AuthData auth) throws DataAccessException {
         String sql = "INSERT INTO auth (authToken, username) VALUES (?,?)";
 
-        try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
+        try (var conn = getConnection(); var stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, auth.authToken());
-            stmt.setString(1, auth.username());
+            stmt.setString(2, auth.username());
             stmt.executeUpdate();
         } catch (SQLException ex) {
             throw new DataAccessException("Could not insert auth", ex);
@@ -143,9 +146,9 @@ public class MYSqlDataAccess implements DataAccess {
 
     @Override
     public AuthData getAuth(String authToken) throws DataAccessException {
-        String sql = "SELECT * FROM auth WHERE authToken = ?";
+        String sql = "SELECT * FROM auth WHERE token = ?";
 
-        try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
+        try (var conn = getConnection(); var stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, authToken);
 
             try (var rs = stmt.executeQuery()) {
@@ -164,9 +167,9 @@ public class MYSqlDataAccess implements DataAccess {
 
     @Override
     public void deleteAuth(String authToken) throws DataAccessException {
-        String sql = "DELETE FROM auth WHERE authToken = ?";
+        String sql = "DELETE FROM auth WHERE token = ?";
 
-        try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement(sql)) {
+        try (var conn = getConnection(); var stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, authToken);
             stmt.executeUpdate();
         } catch (SQLException ex) {
@@ -178,5 +181,17 @@ public class MYSqlDataAccess implements DataAccess {
     public int nextGameID() throws DataAccessException {
         throw new UnsupportedOperationException("Not yet implemented");
     }
+
+    public void clearDatabase() throws DataAccessException {
+        try (var conn = getConnection();
+             var stmt = conn.createStatement()) {
+            stmt.executeUpdate("DELETE FROM auth");
+            stmt.executeUpdate("DELETE FROM users");
+            stmt.executeUpdate("DELETE FROM games");
+        } catch (SQLException e) {
+            throw new DataAccessException("Error clearing DB", e);
+        }
+    }
+
 
 }

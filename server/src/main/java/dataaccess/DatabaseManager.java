@@ -35,7 +35,8 @@ public class DatabaseManager {
             stmt.executeUpdate(""" 
                 CREATE TABLE IF NOT EXISTS user (
                     username VARCHAR(50) PRIMARY KEY,
-                    password VARCHAR (50) NOT NULL
+                    password VARCHAR (50) NOT NULL,
+                    email VARCHAR (50) NOT NULL
                 )
                 """);
 
@@ -64,16 +65,16 @@ public class DatabaseManager {
         }
     }
 
-    public static void configureDatabase() throws DataAccessException {
-        try (var conn = getConnection(); var stmt = conn.createStatement()) {
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS user (...)");
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS auth (...)");
-            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS game (...)");
-        } catch (SQLException ex) {
-            throw new DataAccessException("failed to configure database", ex);
-        }
-
-    }
+//    public static void configureDatabase() throws DataAccessException {
+//        try (var conn = getConnection(); var stmt = conn.createStatement()) {
+//            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS user (...)");
+//            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS auth (...)");
+//            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS game (...)");
+//        } catch (SQLException ex) {
+//            throw new DataAccessException("failed to configure database", ex);
+//        }
+//
+//    }
 
     /**
      * Create a connection to the database and sets the catalog based upon the
