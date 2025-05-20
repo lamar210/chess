@@ -31,20 +31,21 @@ public class DatabaseManager {
 
     public static  void createTables() throws DataAccessException {
         try (var conn = getConnection(); var stmt = conn.createStatement()) {
-
-            stmt.executeUpdate(""" 
-                CREATE TABLE IF NOT EXISTS user (
-                    username VARCHAR(50) PRIMARY KEY,
-                    password VARCHAR (50) NOT NULL,
-                    email VARCHAR (50) NOT NULL
+            stmt.executeUpdate("DROP TABLE IF EXISTS auth");
+            stmt.executeUpdate("DROP TABLE IF EXISTS game");
+            stmt.executeUpdate("DROP TABLE IF EXISTS user");
+            stmt.executeUpdate("""
+                CREATE TABLE IF NOT EXISTS user(
+                    username VARCHAR(255) PRIMARY KEY,
+                    password VARCHAR (255) NOT NULL,
+                    email VARCHAR (255) NOT NULL
                 )
                 """);
 
             stmt.executeUpdate("""
                 CREATE TABLE IF NOT EXISTS auth (
                     token VARCHAR(100) PRIMARY KEY,
-                    username VARCHAR(50),
-                    FOREIGN KEY (username) REFERENCES user(username)
+                    username VARCHAR(255)
                 )
                 """);
 
@@ -54,9 +55,7 @@ public class DatabaseManager {
                     gameName VARCHAR(100),
                     whiteUsername VARCHAR(50),
                     blackUsername VARCHAR(50),
-                    gameState TEXT,
-                    FOREIGN KEY (whiteUsername) REFERENCES user(username),
-                    FOREIGN KEY (blackUsername) REFERENCES user(username)
+                    gameState TEXT
                 )
                 """);
 
