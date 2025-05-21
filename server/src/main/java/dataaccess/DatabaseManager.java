@@ -31,9 +31,6 @@ public class DatabaseManager {
 
     public static  void createTables() throws DataAccessException {
         try (var conn = getConnection(); var stmt = conn.createStatement()) {
-            stmt.executeUpdate("DROP TABLE IF EXISTS auth");
-            stmt.executeUpdate("DROP TABLE IF EXISTS game");
-            stmt.executeUpdate("DROP TABLE IF EXISTS user");
             stmt.executeUpdate("""
                 CREATE TABLE IF NOT EXISTS user(
                     username VARCHAR(255) PRIMARY KEY,
@@ -63,17 +60,6 @@ public class DatabaseManager {
             throw  new DataAccessException("Failed to create tables", ex);
         }
     }
-
-//    public static void configureDatabase() throws DataAccessException {
-//        try (var conn = getConnection(); var stmt = conn.createStatement()) {
-//            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS user (...)");
-//            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS auth (...)");
-//            stmt.executeUpdate("CREATE TABLE IF NOT EXISTS game (...)");
-//        } catch (SQLException ex) {
-//            throw new DataAccessException("failed to configure database", ex);
-//        }
-//
-//    }
 
     /**
      * Create a connection to the database and sets the catalog based upon the

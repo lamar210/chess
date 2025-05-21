@@ -21,16 +21,7 @@ public class MySqlDataAccess implements DataAccess {
     Gson gson = new GsonBuilder().serializeNulls().enableComplexMapKeySerialization().registerTypeAdapter(ChessPosition.class, new ChessPositionAdapter()).create();
 
     public MySqlDataAccess() {
-//        try{
-//            DatabaseManager.createDatabase();
-//        } catch (DataAccessException ex){
-//            throw new RuntimeException(ex.getMessage());
-//        }
-//        try (var conn = DatabaseManager.getConnection()) {
-//            DatabaseManager.createTables();
-//        } catch (SQLException | DataAccessException ex) {
-//            throw new RuntimeException(ex);
-//        }
+
     }
 
     @Override
