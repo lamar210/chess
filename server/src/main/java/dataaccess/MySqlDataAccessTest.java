@@ -17,7 +17,7 @@ class MySqlDataAccessTest {
     private final GameData game = new GameData(1, null, null, "Test Game", null);
 
     @BeforeEach
-    void setup() throws DataAccessException{
+    void setup() throws DataAccessException {
         dao = new MySqlDataAccess();
         dao.clear();
     }

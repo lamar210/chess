@@ -48,8 +48,11 @@ public class MySqlDataAccess implements DataAccess {
     public void createUser (UserData user) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection();
              var stmt = conn.prepareStatement("INSERT INTO user (username, password, email) VALUES (?,?,?)")) {
+
+            String hashed = BCrypt.hashpw(user.password(), BCrypt.gensalt());
+
             stmt.setString(1, user.username());
-            stmt.setString(2, user.password());
+            stmt.setString(2, hashed);
             stmt.setString(3, user.email());
             stmt.executeUpdate();
         } catch (SQLException ex) {

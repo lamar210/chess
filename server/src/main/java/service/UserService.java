@@ -23,8 +23,7 @@ public class UserService {
             throw new DataAccessException("Bad request");
         }
 
-        String hashed = BCrypt.hashpw(req.password(), BCrypt.gensalt());
-        UserData user = new UserData(req.username(), hashed, req.email());
+        UserData user = new UserData(req.username(), req.password(), req.email());
         dao.createUser(user);
 
         String token = UUID.randomUUID().toString();
