@@ -162,6 +162,10 @@ public class MySqlDataAccess implements DataAccess {
             stmt.setString(3, gameStateJson);
             stmt.setInt(4, game.gameID());
             stmt.executeUpdate();
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated == 0) {
+                throw new DataAccessException("Game not found: " + game.gameID());
+            }
         } catch (SQLException ex) {
             throw new DataAccessException("Could not update game", ex);
         }

@@ -70,6 +70,18 @@ class MySqlDataAccessTest {
     }
 
     @Test
+    void invalidDeleteAuthDoesNotThrow() {
+        assertDoesNotThrow(() -> dao.deleteAuth("nonexistent"));
+    }
+
+    @Test
+    void createAuthTwiceThrows() throws DataAccessException {
+        dao.createUser(user);
+        dao.createAuth(auth);
+        assertThrows(DataAccessException.class, () -> dao.createAuth(auth));
+    }
+
+    @Test
     void validCreateGame() throws DataAccessException {
         dao.createGame(game);
         GameData stored = dao.getGame(game.gameID());
@@ -92,6 +104,12 @@ class MySqlDataAccessTest {
     }
 
     @Test
+    void listGamesEmptyWhenNoneCreated() throws DataAccessException {
+        List<GameData> games = dao.listGames();
+        assertTrue(games.isEmpty());
+    }
+
+    @Test
     void validUpdateGame() throws DataAccessException {
         dao.createGame(game);
         GameData updated = new GameData(game.gameID(), "tester", "opponent", game.gameName(), game.game());
@@ -99,6 +117,12 @@ class MySqlDataAccessTest {
         GameData result = dao.getGame(game.gameID());
         assertEquals("tester", result.whiteUsername());
         assertEquals("opponent", result.blackUsername());
+    }
+
+    @Test
+    void updateGameNotExistingFails() {
+        GameData updated = new GameData(9999, "nope", "stillNope", "ghostGame", null);
+        assertThrows(DataAccessException.class, () -> dao.updateGame(updated));
     }
 
     @Test
@@ -114,5 +138,20 @@ class MySqlDataAccessTest {
         dao.createUser(user);
         dao.clear();
         assertNull(dao.getUser(user.username()));
+    }
+
+    @Test
+    void clearRemovesGames() throws DataAccessException {
+        dao.createGame(game);
+        dao.clear();
+        assertTrue(dao.listGames().isEmpty());
+    }
+
+    @Test
+    void clearRemovesAuth() throws DataAccessException {
+        dao.createUser(user);
+        dao.createAuth(auth);
+        dao.clear();
+        assertNull(dao.getAuth(auth.authToken()));
     }
 }
