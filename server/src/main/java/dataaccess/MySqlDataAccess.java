@@ -18,7 +18,10 @@ import static dataaccess.DatabaseManager.getConnection;
 
 public class MySqlDataAccess implements DataAccess {
 
-    Gson gson = new GsonBuilder().serializeNulls().enableComplexMapKeySerialization().registerTypeAdapter(ChessPosition.class, new ChessPositionAdapter()).create();
+    Gson gson = new GsonBuilder()
+            .serializeNulls()
+            .enableComplexMapKeySerialization()
+            .registerTypeAdapter(ChessPosition.class, new ChessPositionAdapter()).create();
 
     public MySqlDataAccess() {
 
@@ -43,7 +46,8 @@ public class MySqlDataAccess implements DataAccess {
 
     @Override
     public void createUser (UserData user) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection(); var stmt = conn.prepareStatement("INSERT INTO user (username, password, email) VALUES (?,?,?)")) {
+        try (var conn = DatabaseManager.getConnection();
+             var stmt = conn.prepareStatement("INSERT INTO user (username, password, email) VALUES (?,?,?)")) {
             stmt.setString(1, user.username());
             stmt.setString(2, user.password());
             stmt.setString(3, user.email());
@@ -222,17 +226,4 @@ public class MySqlDataAccess implements DataAccess {
             throw new DataAccessException("Could not get next game ID", ex);
         }
     }
-
-    public void clearDatabase() throws DataAccessException {
-        try (var conn = getConnection();
-             var stmt = conn.createStatement()) {
-            stmt.executeUpdate("DELETE FROM auth");
-            stmt.executeUpdate("DELETE FROM users");
-            stmt.executeUpdate("DELETE FROM games");
-        } catch (SQLException e) {
-            throw new DataAccessException("Error clearing DB", e);
-        }
-    }
-
-
 }
