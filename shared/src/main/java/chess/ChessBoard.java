@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class ChessBoard {
 
-    private final Map<ChessPosition, ChessPiece> board = new HashMap<>();
+    private final Map<ChessPosition, ChessPiece> pieces = new HashMap<>();
 
     public ChessBoard() {
 
@@ -27,9 +27,9 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
 
         if (piece == null) {
-            board.remove(position);
+            pieces.remove(position);
         } else {
-            board.put(position, piece);
+            pieces.put(position, piece);
         }
     }
 
@@ -42,7 +42,7 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
 
-        return board.get(position);
+        return pieces.get(position);
     }
 
     /**
@@ -51,7 +51,7 @@ public class ChessBoard {
      */
     public void resetBoard() {
 
-        board.clear();
+        pieces.clear();
 
         //white: non-pawn pieces
 
@@ -109,11 +109,11 @@ public class ChessBoard {
             return false;
         }
         ChessBoard that = (ChessBoard) o;
-        return Objects.equals(board, that.board);
+        return Objects.equals(pieces, that.pieces);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(board);
+        return Objects.hashCode(pieces);
     }
 }
