@@ -22,24 +22,25 @@ class MySqlDataAccessTest {
         dao.clear();
     }
 
+    private void assertUserMatch(UserData expected, UserData actual) {
+        assertNotNull(actual);
+        assertEquals(expected.username(), actual.username());
+        assertEquals(expected.email(), actual.email());
+        assertTrue(BCrypt.checkpw(expected.password(), actual.password()));
+    }
+
     @Test
     void validCreateUser() throws DataAccessException {
         dao.createUser(user);
         UserData stored = dao.getUser(user.username());
-        assertNotNull(stored);
-        assertEquals(user.username(), stored.username());
-        assertEquals(user.email(), stored.email());
-        assertTrue(BCrypt.checkpw(user.password(), stored.password()));
+        assertUserMatch(user, stored);
     }
 
     @Test
     void validGetUser() throws DataAccessException {
         dao.createUser(user);
         UserData stored = dao.getUser(user.username());
-        assertNotNull(stored);
-        assertEquals(user.username(), stored.username());
-        assertEquals(user.email(), stored.email());
-        assertTrue(BCrypt.checkpw(user.password(), stored.password()));
+        assertUserMatch(user, stored);
     }
 
     @Test
