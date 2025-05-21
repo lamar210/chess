@@ -1,6 +1,9 @@
 package dataaccess;
 
 import chess.ChessGame;
+import chess.ChessPosition;
+import chess.ChessPositionAdapter;
+import com.google.gson.GsonBuilder;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -15,19 +18,19 @@ import static dataaccess.DatabaseManager.getConnection;
 
 public class MySqlDataAccess implements DataAccess {
 
-    private final Gson gson = new Gson();
+    Gson gson = new GsonBuilder().serializeNulls().enableComplexMapKeySerialization().registerTypeAdapter(ChessPosition.class, new ChessPositionAdapter()).create();
 
     public MySqlDataAccess() {
-        try{
-            DatabaseManager.createDatabase();
-        } catch (DataAccessException ex){
-            throw new RuntimeException(ex.getMessage());
-        }
-        try (var conn = DatabaseManager.getConnection()) {
-            DatabaseManager.createTables();
-        } catch (SQLException | DataAccessException ex) {
-            throw new RuntimeException(ex);
-        }
+//        try{
+//            DatabaseManager.createDatabase();
+//        } catch (DataAccessException ex){
+//            throw new RuntimeException(ex.getMessage());
+//        }
+//        try (var conn = DatabaseManager.getConnection()) {
+//            DatabaseManager.createTables();
+//        } catch (SQLException | DataAccessException ex) {
+//            throw new RuntimeException(ex);
+//        }
     }
 
     @Override
@@ -88,7 +91,6 @@ public class MySqlDataAccess implements DataAccess {
     public void createGame(GameData game) throws DataAccessException {
         String insert = "INSERT INTO game (gameID, gameName, whiteUsername, blackUsername, gameState) VALUES (?, ?, ?, ?, ?)";
 
-        Gson gson = new Gson();
         String gameStateJson = gson.toJson(game.game());
 
         try (var conn = getConnection(); var stmt = conn.prepareStatement(insert)) {
@@ -116,10 +118,6 @@ public class MySqlDataAccess implements DataAccess {
                     String whiteUsername = rs.getString("whiteUsername");
                     String blackUsername = rs.getString("blackUsername");
                     String gameStateJson = rs.getString("gameState");
-
-                    Gson gson = new Gson();
-
-                    System.out.println("Raw JSON from DB: " + gameStateJson);
 
                     ChessGame chessGame = gson.fromJson(gameStateJson, ChessGame.class);
 

@@ -86,7 +86,7 @@ public class Server {
 
         delete("/session", (req, res) -> {
             String token = req.headers("authorization");
-            if (token == null) {
+            if (token == null|| dao.getAuth(token) == null) {
                 throw new DataAccessException("Unauthorized");
             }
             userService.logout(new LogoutRequest(token));
@@ -96,7 +96,7 @@ public class Server {
 
         get("/game", (req, res) -> {
             String token = req.headers("authorization");
-            if (token == null) {
+            if (token == null || dao.getAuth(token) == null) {
                 throw new DataAccessException("Unauthorized");
             }
             dao.getAuth(token);
@@ -133,7 +133,7 @@ public class Server {
 
         put("/game", (req, res) -> {
             String token = req.headers("authorization");
-            if (token == null) {
+            if (token == null || dao.getAuth(token) == null) {
                 throw new DataAccessException("Unauthorized");
             }
 

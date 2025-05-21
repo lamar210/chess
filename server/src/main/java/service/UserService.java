@@ -40,8 +40,8 @@ public class UserService {
 
         UserData storedUser = dao.getUser(req.username());
 
-        System.out.println("User trying to login: " + req.username());
-        System.out.println("Password entered: " + req.password());
+//        System.out.println("User trying to login: " + req.username());
+//        System.out.println("Password entered: " + req.password());
 
         if (storedUser == null || !BCrypt.checkpw(req.password(), storedUser.password())) {
             throw new DataAccessException("Invalid credentials");
