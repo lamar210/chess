@@ -1,4 +1,4 @@
-package service;
+package model;
 
 public record RegisterRequest (
     String username,
