@@ -1,13 +1,20 @@
 package client;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import model.GameData;
 
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+
+import static java.lang.Character.getType;
 
 
 public class ServerFacade {
@@ -117,6 +124,33 @@ public class ServerFacade {
             return -1;
         }
         return (int) res.get("gameID");
+    }
+
+    public Collection<GameData> listGames() {
+        var res = request("GET", "/game", null);
+
+        if (res.containsKey("Error")) {
+            return new HashSet<>();
+        }
+        Object gameObj = res.get("games");
+        String gamesJson = new Gson().toJson(gameObj);
+
+        return new Gson().fromJson(gamesJson, new TypeToken<Collection<GameData>>(){}.getType());
+    }
+
+    public boolean joinGame(ChessGame.TeamColor color, int gameID) {
+        Map body;
+
+        if (color != null) {
+            body = Map.of("playerColor", color, "gameID", gameID);
+        } else {
+            body = Map.of("gameID", gameID);
+        }
+
+        var jsonBody = new Gson().toJson(body);
+        var res = request("PUT", "/game", jsonBody);
+
+        return !res.containsKey("Error");
     }
 
 }
