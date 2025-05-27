@@ -76,11 +76,47 @@ public class ServerFacade {
         Map res = request("POST", "/user", jsonBody);
 
         if (res.containsKey("Error")) {
-            System.out.println("Register failed: " + res.get("Error"));
             return false;
         }
         setAuthToken((String) res.get("authToken"));
         return true;
+    }
+
+    public boolean login(String u, String p) {
+        var body = Map.of (
+                "username", u,
+                "password", p
+        );
+
+        String jsonBody = new Gson().toJson(body);
+        Map res = request("POST", "/session", jsonBody);
+
+        if (res.containsKey("Error")) {
+            return false;
+        }
+        setAuthToken((String) res.get("authToken"));
+        return true;
+    }
+
+    public boolean logout(String u, String p) {
+        Map res = request("DELETE", "/session", null);
+
+        if (res.containsKey("Error")) {
+            return false;
+        }
+        setAuthToken(null);
+        return true;
+    }
+
+    public int createGame(String gameName) {
+        var body = Map.of("gameName", gameName);
+        var jsonBody = new Gson().toJson(body);
+        Map res = request("POST", "/game", jsonBody);
+
+        if (res.containsKey("Error")) {
+            return -1;
+        }
+        return (int) res.get("gameID");
     }
 
 }
