@@ -77,4 +77,26 @@ public class ServerFacadeTests {
         boolean loggedIn = facade.login(u, p);
         Assertions.assertFalse(loggedIn, "Login successful");
     }
+
+    @Test
+    public void validLogout() {
+        var u = "User";
+        var p = "pass";
+        var e = "email";
+
+        boolean SuccessOne = facade.register(u, p ,e);
+        Assertions.assertTrue(SuccessOne, "Registration successful");
+
+        boolean loggedIn = facade.login(u, p);
+        Assertions.assertTrue(loggedIn, "Login successful");
+        boolean loggedOut = facade.logout();
+        Assertions.assertTrue(loggedOut, "Logout successful");
+
+    }
+
+    @Test
+    public void invalidLogout() {
+        boolean loggedOut = facade.logout();
+        Assertions.assertFalse(loggedOut, "Logout successful");
+    }
 }

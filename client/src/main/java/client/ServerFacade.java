@@ -105,7 +105,7 @@ public class ServerFacade {
         return true;
     }
 
-    public boolean logout(String u, String p) {
+    public boolean logout() {
         Map res = request("DELETE", "/session", null);
 
         if (res.containsKey("Error")) {
