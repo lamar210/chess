@@ -21,8 +21,8 @@ public class ServerFacade {
     private final String url;
     private String authToken;
 
-    public ServerFacade() {
-        this("localhost:8080");
+    public ServerFacade(int port) {
+        this("localhost:" + port);
     }
 
     public ServerFacade(String serverDomain) {
@@ -57,7 +57,7 @@ public class ServerFacade {
         return http;
     }
 
-    private Map request(String method, String endpoint, String body) {
+    public Map request(String method, String endpoint, String body) {
         Map result;
 
         try {
@@ -152,5 +152,4 @@ public class ServerFacade {
 
         return !res.containsKey("Error");
     }
-
 }
