@@ -1,4 +1,4 @@
-package model;
+package service;
 
 public record CreateGameReq(
         Integer gameID,

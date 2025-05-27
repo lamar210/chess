@@ -5,6 +5,10 @@ import com.google.gson.GsonBuilder;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.MySqlDataAccess;
+import service.CreateGameReq;
+import service.CreateGameResult;
+import service.LoginRequest;
+import service.RegisterRequest;
 import service.*;
 import spark.*;
 

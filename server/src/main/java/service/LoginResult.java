@@ -1,4 +1,4 @@
-package model;
+package service;
 
 public record LoginResult(
         String username,
