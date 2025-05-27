@@ -123,7 +123,7 @@ public class ServerFacade {
         if (res.containsKey("Error")) {
             return -1;
         }
-        return (int) res.get("gameID");
+        return ((Double) res.get("gameID")).intValue();
     }
 
     public Collection<GameData> listGames() {
