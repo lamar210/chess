@@ -19,8 +19,11 @@ import static spark.Spark.*;
 
 public class Server {
 
+    private int port;
+
     public int run(int desiredPort) {
         Spark.port(desiredPort);
+        this.port = desiredPort;
         Spark.staticFiles.location("web");
 
         try {
@@ -41,6 +44,10 @@ public class Server {
         Spark.init();
         Spark.awaitInitialization();
         return Spark.port();
+    }
+
+    public int getPort() {
+        return port;
     }
 
     private void configureExceptions(com.google.gson.Gson gson) {

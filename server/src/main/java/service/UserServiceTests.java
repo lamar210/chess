@@ -2,17 +2,19 @@ package service;
 
 import dataaccess.DataAccessException;
 import dataaccess.InMemoryDAO;
+import dataaccess.MySqlDataAccess;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserServiceTests {
 
-    private InMemoryDAO dao;
+    private MySqlDataAccess dao;
     private UserService service;
 
     @BeforeEach
-    void setup() {
-        dao = new InMemoryDAO();
+    void setup() throws DataAccessException{
+        dao = new MySqlDataAccess();
+        dao.clear();
         service = new UserService(dao);
     }
 
@@ -55,7 +57,7 @@ public class UserServiceTests {
         LoginResult result = service.login(new LoginRequest("lamar", "pw"));
         assertDoesNotThrow(() -> dao.getAuth(result.authToken()));
         assertDoesNotThrow(() -> service.logout(new LogoutRequest(result.authToken())));
-        assertThrows(DataAccessException.class, () -> dao.getAuth(result.authToken()));
+        assertNull(dao.getAuth(result.authToken()));
     }
 
 
