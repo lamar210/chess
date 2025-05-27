@@ -40,7 +40,7 @@ public class ServerFacadeTests {
 
         boolean success = facade.register(username, password, email);
 
-        Assertions.assertTrue(success, "Registration successful");
+        Assertions.assertTrue(success, "Registration failed");
     }
 
     @Test
@@ -50,7 +50,7 @@ public class ServerFacadeTests {
         var e = "email";
 
         boolean SuccessOne = facade.register(u, p ,e);
-        Assertions.assertTrue(SuccessOne, "Registration successful");
+        Assertions.assertTrue(SuccessOne, "Registration failed");
 
         boolean SuccessTwo = facade.register(u, p ,e);
         Assertions.assertFalse(SuccessTwo, "Duplicate user");
@@ -63,10 +63,10 @@ public class ServerFacadeTests {
         var e = "email";
 
         boolean SuccessOne = facade.register(u, p ,e);
-        Assertions.assertTrue(SuccessOne, "Registration successful");
+        Assertions.assertTrue(SuccessOne, "Registration failed");
 
         boolean loggedIn = facade.login(u, p);
-        Assertions.assertTrue(loggedIn, "Login successful");
+        Assertions.assertTrue(loggedIn, "Login failed");
     }
 
     @Test
@@ -75,7 +75,7 @@ public class ServerFacadeTests {
         var p = "wrongPass";
 
         boolean loggedIn = facade.login(u, p);
-        Assertions.assertFalse(loggedIn, "Login successful");
+        Assertions.assertFalse(loggedIn, "Login failed");
     }
 
     @Test
@@ -85,18 +85,35 @@ public class ServerFacadeTests {
         var e = "email";
 
         boolean SuccessOne = facade.register(u, p ,e);
-        Assertions.assertTrue(SuccessOne, "Registration successful");
+        Assertions.assertTrue(SuccessOne, "Registration failed");
 
         boolean loggedIn = facade.login(u, p);
-        Assertions.assertTrue(loggedIn, "Login successful");
+        Assertions.assertTrue(loggedIn, "Login failed");
         boolean loggedOut = facade.logout();
-        Assertions.assertTrue(loggedOut, "Logout successful");
+        Assertions.assertTrue(loggedOut, "Logout failed");
 
     }
 
     @Test
     public void invalidLogout() {
         boolean loggedOut = facade.logout();
-        Assertions.assertFalse(loggedOut, "Logout successful");
+        Assertions.assertFalse(loggedOut, "Logout failed");
+    }
+
+    @Test
+    public void validCreateGame() {
+        var gameName = "gameName";
+        var u = "User";
+        var p = "pass";
+        var e = "email";
+
+        boolean registered = facade.register(u, p ,e);
+        Assertions.assertTrue(registered, "Registration failed");
+
+        boolean loggedIn = facade.login(u, p);
+        Assertions.assertTrue(loggedIn, "Login failed");
+
+        int gameID = facade.createGame(gameName);
+        Assertions.assertTrue(gameID > 0, "Couldn't create game ");
     }
 }
