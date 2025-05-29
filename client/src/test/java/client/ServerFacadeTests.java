@@ -1,5 +1,6 @@
 package client;
 
+import chess.ChessGame;
 import org.junit.jupiter.api.*;
 import server.Server;
 
@@ -117,5 +118,13 @@ public class ServerFacadeTests {
         facade.createGame("BYU");
         facade.createGame("UVU");
         Assertions.assertEquals(2, facade.listGames().size());
+    }
+
+    @Test
+    public void validJoinGame(){
+        facade.register("username", "password", "email");
+        facade.login("username", "password");
+        int gameID = facade.createGame("BYU");
+        Assertions.assertTrue(facade.joinGame(ChessGame.TeamColor.WHITE, gameID));
     }
 }
