@@ -122,8 +122,12 @@ public class ServerFacadeTests {
 
     @Test
     public void validJoinGame(){
-        facade.register("username", "password", "email");
-        facade.login("username", "password");
+        var u = "User";
+        var p = "pass";
+        var e = "email";
+
+        facade.register(u, p, e);
+        facade.login(u, p);
         int gameID = facade.createGame("BYU");
         Assertions.assertTrue(facade.joinGame(ChessGame.TeamColor.WHITE, gameID));
     }
