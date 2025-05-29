@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class ChessBoard {
 
-    private final Map<ChessPosition, ChessPiece> pieces = new HashMap<>();
+    private final transient Map<ChessPosition, ChessPiece> pieces = new HashMap<>();
 
     public ChessBoard() {
 
