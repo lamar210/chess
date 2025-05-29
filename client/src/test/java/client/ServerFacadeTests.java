@@ -131,4 +131,9 @@ public class ServerFacadeTests {
         int gameID = facade.createGame("BYU");
         Assertions.assertTrue(facade.joinGame(ChessGame.TeamColor.WHITE, gameID));
     }
+
+    @Test
+    public void invalidJoinGame(){
+        Assertions.assertFalse(facade.joinGame(ChessGame.TeamColor.WHITE, 0));
+    }
 }
