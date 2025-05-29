@@ -2,7 +2,6 @@ package dataaccess;
 
 import chess.ChessGame;
 import chess.ChessPosition;
-import chess.ChessPositionAdapter;
 import com.google.gson.GsonBuilder;
 import model.AuthData;
 import model.GameData;
@@ -21,7 +20,7 @@ public class MySqlDataAccess implements DataAccess {
     Gson gson = new GsonBuilder()
             .serializeNulls()
             .enableComplexMapKeySerialization()
-            .registerTypeAdapter(ChessPosition.class, new ChessPositionAdapter()).create();
+            .create();
 
     public MySqlDataAccess() {
 
