@@ -89,9 +89,14 @@ public class PostLogin {
                         break;
                     }
 
-                    System.out.println("Enter the number of the game you'd like to observe:");
-                    Scanner scanner = new Scanner(System.in);
-                    String inputStr = scanner.nextLine();
+                    String inputStr;
+                    if (input.length == 2) {
+                        inputStr = input[1];
+                    } else {
+                        System.out.println("Enter the number of the game you'd like to observe:");
+                        Scanner scanner = new Scanner(System.in);
+                        inputStr = scanner.nextLine();
+                    }
 
                     if (!inputStr.matches("\\d+")) {
                         System.out.println("Invalid input. Please enter a number.");
@@ -108,7 +113,7 @@ public class PostLogin {
 
                     GameData game = gameList.get(gameIndex);
                     ChessGame observedGame = game.game();
-                    observedGame.getBoard().resetBoard();  // Optional: if needed to show full board
+                    observedGame.getBoard().resetBoard();
 
                     BoardLayout layout = new BoardLayout(observedGame);
                     layout.displayBoard(ChessGame.TeamColor.WHITE);

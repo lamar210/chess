@@ -18,11 +18,12 @@ public class BoardLayout {
         int[] rows = isWhiteBottom ? new int[]{8,7,6,5,4,3,2,1} : new int[]{1,2,3,4,5,6,7,8};
         int[] cols = isWhiteBottom ? new int[]{1,2,3,4,5,6,7,8} : new int[]{8,7,6,5,4,3,2,1};
 
+
+        String headerWhite = "  a     b     c    d     e     f     g     h";
+        String headerBlack = "  h     g     f    e     d     c     b     a";
+
         System.out.print("\n   ");
-        for (int col : cols) {
-            System.out.print(" " + colToLetter(col) + " ");
-        }
-        System.out.println();
+        System.out.println(isWhiteBottom ? headerWhite : headerBlack);
 
         for (int row : rows) {
             System.out.print(" " + row + " ");
@@ -46,12 +47,8 @@ public class BoardLayout {
             }
             System.out.println(" " + row);
         }
-
         System.out.print("   ");
-        for (int col : cols) {
-            System.out.print(" " + colToLetter(col) + " ");
-        }
-        System.out.println();
+        System.out.println(isWhiteBottom ? headerWhite : headerBlack);
     }
 
     private String pieceSymbol(ChessPiece piece) {
@@ -67,9 +64,5 @@ public class BoardLayout {
             case KNIGHT -> isWhite ? WHITE_KNIGHT : BLACK_KNIGHT;
             case PAWN -> isWhite ? WHITE_PAWN : BLACK_PAWN;
         };
-    }
-
-    private String colToLetter(int col) {
-        return String.valueOf((char) ('a' + col - 1));
     }
 }
