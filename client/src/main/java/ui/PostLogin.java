@@ -45,15 +45,15 @@ public class PostLogin {
                     games = facade.listGames();
                     int i = 1;
                     for (GameData game : games) {
-                        System.out.printf("%d. Game: %s, White: %s, Black: %s\n",
+                        System.out.printf("%d. Game: %s, White: %s, Green: %s\n",
                                 i++, game.gameName(), game.whiteUsername(), game.blackUsername());
                     }
                 }
                 case "join" -> {
 
                     if (input.length != 3 || !input[1].matches("\\d+") ||
-                            !input[2].equalsIgnoreCase("white") && !input[2].equalsIgnoreCase("black")) {
-                        System.out.println("Usage: join <ID> [WHITE|BLACK]");
+                            !input[2].equalsIgnoreCase("white") && !input[2].equalsIgnoreCase("green")) {
+                        System.out.println("Usage: join <ID> [WHITE|GREEN]");
                         break;
                     }
 
@@ -73,6 +73,12 @@ public class PostLogin {
 
                     if (facade.joinGame(color, game.gameID())) {
                         System.out.println("Joined game " + game.gameName() + " as " + color);
+
+                        ChessGame joinedGame = game.game();
+                        joinedGame.getBoard().resetBoard();
+
+                        BoardLayout BL = new BoardLayout(joinedGame);
+                        BL.displayBoard(color);
                     } else {
                         System.out.println("Join failed. Color may be taken :/");
                     }
@@ -95,7 +101,7 @@ public class PostLogin {
     private void helpMenu() {
         System.out.println("create <NAME>             - Create a new game");
         System.out.println("list                      - List available games");
-        System.out.println("join <ID> [WHITE|BLACK]   - Join a game as a player");
+        System.out.println("join <ID> [WHITE|GREEN]   - Join a game as a player");
         System.out.println("logout                    - Log out of your account");
         System.out.println("help                      - Show available commands");
     }
