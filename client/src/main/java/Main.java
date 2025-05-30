@@ -1,8 +1,16 @@
-import chess.*;
+import client.ServerFacade;
+import ui.PreLogin;
+
+import java.io.IOException;
+
 
 public class Main {
-    public static void main(String[] args) {
-        var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        System.out.println("♕ 240 Chess Client: " + piece);
+    public static void main(String[] args) throws IOException {
+
+        ServerFacade facade = new ServerFacade("localhost:8080");
+        System.out.println("Welcome to 240 chess. Type Help to get started.");
+        PreLogin preLogin = new PreLogin(facade);
+        preLogin.run();
+
     }
 }

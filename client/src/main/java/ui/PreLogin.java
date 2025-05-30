@@ -57,6 +57,8 @@ public class PreLogin {
             }
 
         }
+        PostLogin postLogin = new PostLogin(facade);
+        postLogin.run();
     }
 
     private String[] getInput() {

@@ -7,7 +7,6 @@ import model.GameData;
 
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
@@ -15,15 +14,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
-import static java.lang.Character.getType;
-
 
 public class ServerFacade {
     private final String url;
     private String authToken;
 
     public ServerFacade(int port) {
-        this("localhost:" + port);
+        this("localhost:8080");
     }
 
     public ServerFacade(String serverDomain) {
