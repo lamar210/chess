@@ -31,12 +31,12 @@ public class BoardLayout {
                 ChessPiece piece = game.getBoard().getPiece(pos);
 
                 boolean darkSquare = (row + col) % 2 == 0;
-                String squareColor = darkSquare ? SET_BG_COLOR_BABY_GREEN : SET_BG_COLOR_BEIGE;
+                String squareColor = darkSquare ? SET_BG_COLOR_BABY_GREEN : SET_BG_COLOR_WHITE;
                 String pieceColor = SET_TEXT_COLOR_BLACK;
 
                 if (piece != null) {
                     pieceColor = (piece.getTeamColor() == ChessGame.TeamColor.WHITE)
-                            ? SET_TEXT_COLOR_WHITE
+                            ? SET_TEXT_COLOR_BEIGE + SET_TEXT_BOLD
                             : SET_TEXT_COLOR_DARK_GREEN;
                 }
 
