@@ -62,7 +62,7 @@ public class PreLogin {
     }
 
     private String[] getInput() {
-        System.out.print("\n[LOGGED_OUT] >>> ");
+        System.out.print("\n[LOGGED_OUT] >>> USE 'help' TO SEE AVAILABLE OPTIONS :) ");
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine().split(" ");
     }

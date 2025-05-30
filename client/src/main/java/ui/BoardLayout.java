@@ -37,7 +37,7 @@ public class BoardLayout {
                 if (piece != null) {
                     pieceColor = (piece.getTeamColor() == ChessGame.TeamColor.WHITE)
                             ? SET_TEXT_COLOR_BEIGE + SET_TEXT_BOLD
-                            : SET_TEXT_COLOR_DARK_GREEN;
+                            : SET_TEXT_COLOR_DARK_GREEN + SET_TEXT_BOLD;
                 }
 
                 System.out.print(squareColor + pieceColor);
