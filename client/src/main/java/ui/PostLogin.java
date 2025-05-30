@@ -73,7 +73,6 @@ public class PostLogin {
                             : ChessGame.TeamColor.BLACK;
 
                     if (facade.joinGame(color, game.gameID())) {
-                        System.out.println("Joined game " + game.gameName() + " as " + color);
 
                         ChessGame joinedGame = game.game();
                         joinedGame.getBoard().resetBoard();
@@ -84,6 +83,37 @@ public class PostLogin {
                         System.out.println("Join failed. Color may be taken :/");
                     }
                 }
+                case "observe" -> {
+                    if (games == null || games.isEmpty()) {
+                        System.out.println("No games available to observe. Use 'list' first.");
+                        break;
+                    }
+
+                    System.out.println("Enter the number of the game you'd like to observe:");
+                    Scanner scanner = new Scanner(System.in);
+                    String inputStr = scanner.nextLine();
+
+                    if (!inputStr.matches("\\d+")) {
+                        System.out.println("Invalid input. Please enter a number.");
+                        break;
+                    }
+
+                    int gameIndex = Integer.parseInt(inputStr) - 1;
+                    List<GameData> gameList = new ArrayList<>(games);
+
+                    if (gameIndex < 0 || gameIndex >= gameList.size()) {
+                        System.out.println("Invalid game number.");
+                        break;
+                    }
+
+                    GameData game = gameList.get(gameIndex);
+                    ChessGame observedGame = game.game();
+                    observedGame.getBoard().resetBoard();  // Optional: if needed to show full board
+
+                    BoardLayout layout = new BoardLayout(observedGame);
+                    layout.displayBoard(ChessGame.TeamColor.WHITE);
+                }
+
                 default -> {
                     System.out.println("Command not recognized.");
                     helpMenu();
@@ -104,6 +134,7 @@ public class PostLogin {
         System.out.println("list                      - List available games");
         System.out.println("join <ID> [WHITE|GREEN]   - Join a game as a player");
         System.out.println("logout                    - Log out of your account");
+        System.out.println("observe                   - Observe a game");
         System.out.println("help                      - Show available commands");
     }
 }
