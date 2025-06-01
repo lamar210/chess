@@ -30,7 +30,7 @@ public class PostLogin {
                 case "help" -> helpMenu();
                 case "logout" -> {
                     if (facade.logout()) {
-                        System.out.print("Goodbye! („• ֊ •„)੭login");
+                        System.out.print("Goodbye! („• ֊ •„)੭");
                         loggedIn = false;
                     }
                 }
