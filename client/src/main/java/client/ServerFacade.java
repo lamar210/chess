@@ -168,4 +168,9 @@ public class ServerFacade {
         UserGameCommand cmd = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
         ws.sendMessage(new Gson().toJson(cmd));
     }
+
+    public void sendLeaveGame(int gameID, String authToken) throws IOException {
+        UserGameCommand cmd = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+        ws.sendMessage(new Gson().toJson(cmd));
+    }
 }
