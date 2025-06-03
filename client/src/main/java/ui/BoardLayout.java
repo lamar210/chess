@@ -12,7 +12,7 @@ public class BoardLayout {
         this.game = game;
     }
 
-    public void displayBoard(ChessGame.TeamColor perspective) {
+    public void displayBoard(ChessGame.TeamColor perspective, ChessPosition highlight) {
         boolean isWhiteBottom = perspective == ChessGame.TeamColor.WHITE;
 
         int[] rows = isWhiteBottom ? new int[]{8,7,6,5,4,3,2,1} : new int[]{1,2,3,4,5,6,7,8};
