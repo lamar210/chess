@@ -6,7 +6,7 @@ import static ui.EscapeSequences.*;
 
 public class BoardLayout {
 
-    private final ChessGame game;
+    private ChessGame game;
 
     public BoardLayout(ChessGame game) {
         this.game = game;
@@ -51,7 +51,7 @@ public class BoardLayout {
         System.out.println(isWhiteBottom ? headerWhite : headerBlack);
     }
 
-    private String pieceSymbol(ChessPiece piece) {
+    private static String pieceSymbol(ChessPiece piece) {
         if (piece == null) return EMPTY;
 
         boolean isWhite = piece.getTeamColor() == ChessGame.TeamColor.WHITE;

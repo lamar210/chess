@@ -78,7 +78,7 @@ public class PostLogin {
                         joinedGame.getBoard().resetBoard();
 
                         BoardLayout BL = new BoardLayout(joinedGame);
-                        BL.displayBoard(color);
+                        BL.displayBoard(color, null);
                     } else {
                         System.out.println("Join failed. Color may be taken :/");
                     }
@@ -116,7 +116,7 @@ public class PostLogin {
                     observedGame.getBoard().resetBoard();
 
                     BoardLayout layout = new BoardLayout(observedGame);
-                    layout.displayBoard(ChessGame.TeamColor.WHITE);
+                    layout.displayBoard(ChessGame.TeamColor.WHITE, null);
                 }
 
                 default -> {
