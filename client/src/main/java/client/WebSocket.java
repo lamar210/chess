@@ -20,18 +20,12 @@ public class WebSocket {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, uri);
 
-            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
-                @Override
-                public void onMessage(String message) {
-                    handleMessage(message);
-                }
-            });
         } catch (URISyntaxException | DeploymentException | IOException e){
             throw new Exception();
         }
     }
-    public void handleMessage(String message){
-        ServerMessage msg = new Gson().fromJson(message, ServerMessage.class);
-        observer.notify(msg);
+
+    public void sendMessage(String message) throws IOException {
+        this.session.getBasicRemote().sendText(message);
     }
 }
