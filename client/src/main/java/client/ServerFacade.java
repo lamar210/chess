@@ -1,9 +1,11 @@
 package client;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import model.GameData;
+import websocket.commands.UserGameCommand;
 
 
 import java.io.IOException;
@@ -18,6 +20,11 @@ import java.util.Map;
 public class ServerFacade {
     private final String url;
     private String authToken;
+    private WebSocket ws;
+
+    public void setWebSocket(WebSocket ws) {
+        this.ws = ws;
+    }
 
     public ServerFacade(int port) {
         this("localhost:8080");
@@ -31,7 +38,7 @@ public class ServerFacade {
         this.authToken = authToken;
     }
 
-    private String getAuthToken() {
+    public String getAuthToken() {
         return authToken;
     }
 
@@ -149,5 +156,16 @@ public class ServerFacade {
         var res = request("PUT", "/game", jsonBody);
 
         return !res.containsKey("Error");
+    }
+
+    public void sendMakeMove(int gameID, String authToken, ChessMove move) throws IOException {
+        UserGameCommand cmd = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID);
+        cmd.setMove(move);
+        ws.sendMessage(new Gson().toJson(cmd));
+    }
+
+    public void sendResign(int gameID, String authToken) throws  IOException {
+        UserGameCommand cmd = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
+        ws.sendMessage(new Gson().toJson(cmd));
     }
 }
