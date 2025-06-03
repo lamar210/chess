@@ -6,18 +6,17 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import com.google.gson.Gson;
-import ui.BoardLayout;
-import ui.GamePlay;
 import websocket.messages.ServerMessage;
 
-public class WebSocket extends Endpoint {
+public class WebSocket {
 
     Session session;
+    private final ServerMessageObserver observer;
 
-
-    public WebSocket(String serverDomain) throws Exception {
+    public WebSocket(ServerMessageObserver observer, String authToken, int gameID) throws Exception {
+        this.observer = observer;
         try {
-            URI uri = new URI("ws://" + serverDomain + "/ws");
+            URI uri = new URI("ws://localhost:8080/ws");
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, uri);
 
@@ -33,22 +32,6 @@ public class WebSocket extends Endpoint {
     }
     public void handleMessage(String message){
         ServerMessage msg = new Gson().fromJson(message, ServerMessage.class);
-        BoardLayout boardLayout = new BoardLayout(msg.getGame());
-        if (msg.getServerMessageType().equals(ServerMessage.ServerMessageType.LOAD_GAME)){
-            GamePlay.boardLayout.updateGame(msg.getGame());
-            boardLayout.printBoard(BoardLayout.team, null);
-        } else if (msg.getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR)){
-            System.out.println(msg.getMessageError());
-        } else if (msg.getServerMessageType().equals(ServerMessage.ServerMessageType.NOTIFICATION)){
-            System.out.println(msg.getMessage());
-        }
-    }
-
-    @Override
-    public void onOpen(Session session, EndpointConfig endpointConfig) {
-    }
-
-    public void sendMessage(String message) throws IOException {
-        this.session.getBasicRemote().sendText(message);
+        observer.notify(msg);
     }
 }
