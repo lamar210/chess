@@ -12,16 +12,7 @@
     <orderEntry type="module" module-name="server" scope="TEST" />
     <orderEntry type="library" name="google.code.gson" level="project" />
     <orderEntry type="library" name="junit.jupiter" level="project" />
-    <orderEntry type="module-library" exported="">
-      <library name="glassfish.tyrus.bundles.standalone.client" type="repository">
-        <properties maven-id="org.glassfish.tyrus.bundles:tyrus-standalone-client:1.15" />
-        <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/org/glassfish/tyrus/bundles/tyrus-standalone-client/1.15/tyrus-standalone-client-1.15.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="library" name="sparkjava.spark.core" level="project" />
+    <orderEntry type="library" name="glassfish.tyrus.bundles.standalone.client" level="project" />
   </component>
 </module>
