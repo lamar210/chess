@@ -77,8 +77,8 @@ public class PostLogin {
                         ChessGame joinedGame = game.game();
                         joinedGame.getBoard().resetBoard();
 
-                        BoardLayout BL = new BoardLayout(joinedGame);
-                        BL.displayBoard(color, null);
+                        GamePlayUI gameplay = new GamePlayUI(facade, game, color);
+                        gameplay.run();
                     } else {
                         System.out.println("Join failed. Color may be taken :/");
                     }
