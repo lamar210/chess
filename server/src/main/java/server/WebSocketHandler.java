@@ -27,6 +27,14 @@ public class WebSocketHandler {
             var gameID = command.getGameID();
             var token = command.getAuthToken();
 
+            var gameData = Server.gameDAO.getGame(gameID);
+            if (gameData == null) {
+                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                error.setErrorMessage("Game not found");
+                session.getRemote().sendString(gson.toJson(error));
+                return;
+            }
+
             Server.sessions.put(session, gameID);
             ChessGame game = Server.gameDAO.getGame(gameID).game();
 
@@ -36,6 +44,7 @@ public class WebSocketHandler {
 
             var username = Server.authDAO.getAuth(token).username();
             String note = "%s has joined the game.".formatted(username);
+
             ServerMessage notify = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             notify.setMessage(note);
 
