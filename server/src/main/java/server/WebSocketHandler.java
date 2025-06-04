@@ -26,6 +26,15 @@ public class WebSocketHandler {
         if (command.getCommandType() == UserGameCommand.CommandType.CONNECT) {
             var gameID = command.getGameID();
             var token = command.getAuthToken();
+            var move = command.getMove();
+
+            var auth = Server.authDAO.getAuth(token);
+            if (auth == null) {
+                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                error.setErrorMessage("Invalid or expired auth token.");
+                session.getRemote().sendString(gson.toJson(error));
+                return;
+            }
 
             var gameData = Server.gameDAO.getGame(gameID);
             if (gameData == null) {
@@ -36,13 +45,15 @@ public class WebSocketHandler {
             }
 
             Server.sessions.put(session, gameID);
-            ChessGame game = Server.gameDAO.getGame(gameID).game();
+            ChessGame game = gameData.game();
+
+
 
             ServerMessage loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
             loadGame.setGame(game);
             session.getRemote().sendString(gson.toJson(loadGame));
 
-            var username = Server.authDAO.getAuth(token).username();
+            var username = auth.username();
             String note = "%s has joined the game.".formatted(username);
 
             ServerMessage notify = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
