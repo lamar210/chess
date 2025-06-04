@@ -23,49 +23,11 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws IOException, DataAccessException {
         UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
 
-        if (command.getCommandType() == UserGameCommand.CommandType.CONNECT) {
-            var gameID = command.getGameID();
-            var token = command.getAuthToken();
-            var move = command.getMove();
-
-            var auth = Server.authDAO.getAuth(token);
-            if (auth == null) {
-                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-                error.setErrorMessage("Invalid or expired auth token.");
-                session.getRemote().sendString(gson.toJson(error));
-                return;
-            }
-
-            var gameData = Server.gameDAO.getGame(gameID);
-            if (gameData == null) {
-                ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-                error.setErrorMessage("Game not found");
-                session.getRemote().sendString(gson.toJson(error));
-                return;
-            }
-
-            Server.sessions.put(session, gameID);
-            ChessGame game = gameData.game();
-
-
-
-            ServerMessage loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-            loadGame.setGame(game);
-            session.getRemote().sendString(gson.toJson(loadGame));
-
-            var username = auth.username();
-            String note = "%s has joined the game.".formatted(username);
-
-            ServerMessage notify = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            notify.setMessage(note);
-
-            for (var entry : Server.sessions.entrySet()) {
-                Session s = entry.getKey();
-                int sessionGameId = entry.getValue();
-                if (!s.equals(session) && sessionGameId == gameID) {
-                    s.getRemote().sendString(gson.toJson(notify));
-                }
-            }
+        switch (command.getCommandType()) {
+            case CONNECT -> handleConnect(session, command);
+//            case MAKE_MOVE -> handleMakeMove(session, command);
+//            case LEAVE -> handleLeave(session, command);
+//            case RESIGN -> handleResign(session, command);
         }
     }
 
@@ -78,5 +40,47 @@ public class WebSocketHandler {
     @OnWebSocketError
     public void onError(Session session, Throwable error) {
         System.err.println("WebSocket error: " + error.getMessage());
+    }
+
+    private void sendError(Session session, String errorMessage) throws IOException {
+        ServerMessage error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+        error.setErrorMessage(errorMessage);
+        session.getRemote().sendString(gson.toJson(error));
+    }
+
+    private void notifyOthers(Session sender, int gameID, String message) throws IOException {
+        ServerMessage notify = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        notify.setMessage(message);
+
+        for (var entry : Server.sessions.entrySet()) {
+            if (!entry.getKey().equals(sender) && entry.getValue() == gameID) {
+                entry.getKey().getRemote().sendString(gson.toJson(notify));
+            }
+        }
+    }
+
+    private void handleConnect(Session session, UserGameCommand command) throws IOException, DataAccessException {
+        var auth = Server.authDAO.getAuth(command.getAuthToken());
+        if (auth == null) {
+            sendError(session, "Invalid auth token");
+            return;
+        }
+
+        var gameData = Server.gameDAO.getGame(command.getGameID());
+        if (gameData == null) {
+            sendError(session, "Game not found");
+            return;
+        }
+
+        Server.sessions.put(session, gameData.gameID());
+
+        ChessGame game = gameData.game();
+
+        ServerMessage loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        loadGame.setGame(game);
+        session.getRemote().sendString(gson.toJson(loadGame));
+
+        String note = "%s has joined the game".formatted(auth.username());
+        notifyOthers(session, gameData.gameID(), note);
     }
 }
