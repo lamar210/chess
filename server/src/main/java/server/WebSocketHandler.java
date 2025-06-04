@@ -33,6 +33,19 @@ public class WebSocketHandler {
             ServerMessage loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
             loadGame.setGame(game);
             session.getRemote().sendString(gson.toJson(loadGame));
+
+            var username = Server.authDAO.getAuth(token).username();
+            String note = "%s has joined the game.".formatted(username);
+            ServerMessage notify = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            notify.setMessage(note);
+
+            for (var entry : Server.sessions.entrySet()) {
+                Session s = entry.getKey();
+                int sessionGameId = entry.getValue();
+                if (!s.equals(session) && sessionGameId == gameID) {
+                    s.getRemote().sendString(gson.toJson(notify));
+                }
+            }
         }
     }
 
