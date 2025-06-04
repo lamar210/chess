@@ -25,7 +25,7 @@ public class WebSocketHandler {
 
         switch (command.getCommandType()) {
             case CONNECT -> handleConnect(session, command);
-//            case MAKE_MOVE -> handleMakeMove(session, command);
+            case MAKE_MOVE -> handleMakeMove(session, command);
 //            case LEAVE -> handleLeave(session, command);
 //            case RESIGN -> handleResign(session, command);
         }
@@ -59,6 +59,12 @@ public class WebSocketHandler {
         }
     }
 
+    private void sendGame(Session session, ChessGame game) throws IOException {
+        ServerMessage message = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        message.setGame(game);
+        session.getRemote().sendString(gson.toJson(message));
+    }
+
     private void handleConnect(Session session, UserGameCommand command) throws IOException, DataAccessException {
         var auth = Server.authDAO.getAuth(command.getAuthToken());
         if (auth == null) {
@@ -82,5 +88,30 @@ public class WebSocketHandler {
 
         String note = "%s has joined the game".formatted(auth.username());
         notifyOthers(session, gameData.gameID(), note);
+    }
+
+    private void handleMakeMove(Session session, UserGameCommand command) throws IOException, DataAccessException {
+        var auth = Server.authDAO.getAuth(command.getAuthToken());
+        if (auth == null) {
+            sendError(session, "Invalid auth token");
+            return;
+        }
+
+        var gameData = Server.gameDAO.getGame(command.getGameID());
+        if (gameData == null) {
+            sendError(session, "Game not found");
+            return;
+        }
+
+        ChessGame game = gameData.game();
+
+        try {
+            game.makeMove(command.getMove());
+            Server.gameDAO.updateGame(gameData);
+        } catch (Exception ex) {
+            sendError(session, "Illegal move: " + ex.getMessage());
+            return;
+        }
+        sendGame(session, game);
     }
 }
