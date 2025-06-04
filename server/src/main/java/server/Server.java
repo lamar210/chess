@@ -11,15 +11,18 @@ import service.LoginRequest;
 import service.RegisterRequest;
 import service.*;
 import spark.*;
-
 import java.util.Map;
-
+import java.util.concurrent.ConcurrentHashMap;
 import static spark.Spark.*;
+import org.eclipse.jetty.websocket.api.Session;
 
 
 public class Server {
 
     private int port;
+    public static MySqlDataAccess authDAO;
+    public static MySqlDataAccess gameDAO;
+    public static Map<Session, Integer> sessions = new ConcurrentHashMap<>();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -34,11 +37,14 @@ public class Server {
         }
 
         var dao = new MySqlDataAccess();
+        Server.authDAO = dao;
+        Server.gameDAO = dao;
         var userService = new UserService(dao);
         var gameService = new GameService(dao);
         var gson = new GsonBuilder().serializeNulls().create();
 
         configureExceptions(gson);
+        Spark.webSocket("/ws", WebSocketHandler.class);
         registerRoutes(dao, userService, gameService, gson);
 
         Spark.init();
