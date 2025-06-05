@@ -39,9 +39,9 @@ public class ChessGame {
     }
 
     public ChessGame() {
-        this.board = new ChessBoard();
-        this.board.resetBoard();
-        this.teamTurn = TeamColor.WHITE;
+        board = new ChessBoard();
+        board.resetBoard();
+        setTeamTurn(TeamColor.WHITE);
     }
 
     /**
@@ -58,8 +58,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-
-        this.teamTurn = team;
+        teamTurn = team;
     }
 
     /**
@@ -79,7 +78,6 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = board.getPiece(startPosition);
-
         if (piece == null) {
             return new ArrayList<>();
         }

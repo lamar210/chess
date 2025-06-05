@@ -1,4 +1,5 @@
 package chess;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
@@ -12,7 +13,7 @@ import java.util.Objects;
  */
 public class ChessBoard {
 
-    private final transient Map<ChessPosition, ChessPiece> pieces = new HashMap<>();
+    private ChessPiece[][] pieces = new ChessPiece[8][8];
 
     public ChessBoard() {
 
@@ -25,12 +26,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-
-        if (piece == null) {
-            pieces.remove(position);
-        } else {
-            pieces.put(position, piece);
-        }
+        pieces[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
     /**
@@ -42,7 +38,7 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
 
-        return pieces.get(position);
+        return pieces[position.getRow()-1][position.getColumn()-1];
     }
 
     /**
@@ -51,7 +47,7 @@ public class ChessBoard {
      */
     public void resetBoard() {
 
-        pieces.clear();
+        pieces = new ChessPiece[8][8];;
 
         //white: non-pawn pieces
 
@@ -109,11 +105,11 @@ public class ChessBoard {
             return false;
         }
         ChessBoard that = (ChessBoard) o;
-        return Objects.equals(pieces, that.pieces);
+        return Arrays.deepEquals(pieces, that.pieces);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(pieces);
+        return Arrays.deepHashCode(pieces);
     }
 }
