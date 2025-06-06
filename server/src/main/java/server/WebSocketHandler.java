@@ -29,7 +29,7 @@ public class WebSocketHandler {
             case CONNECT -> handleConnect(session, command);
             case MAKE_MOVE -> handleMakeMove(session, command);
 //            case LEAVE -> handleLeave(session, command);
-//            case RESIGN -> handleResign(session, command);
+            case RESIGN -> handleResign(session, command);
         }
     }
 
@@ -67,19 +67,28 @@ public class WebSocketHandler {
         session.getRemote().sendString(gson.toJson(message));
     }
 
-    private void handleConnect(Session session, UserGameCommand command) throws IOException, DataAccessException {
+    private record AuthAndGame(model.AuthData auth, GameData gameData) {}
+
+    private AuthAndGame check(Session session, UserGameCommand command) throws IOException, DataAccessException {
         var auth = Server.authDAO.getAuth(command.getAuthToken());
         if (auth == null) {
             sendError(session, "Invalid auth token");
-            return;
+            return null;
         }
 
         var gameData = Server.gameDAO.getGame(command.getGameID());
         if (gameData == null) {
             sendError(session, "Game not found");
-            return;
+            return null;
         }
 
+        return new AuthAndGame(auth, gameData);
+    }
+
+    private void handleConnect(Session session, UserGameCommand command) throws IOException, DataAccessException {
+        if (check(session, command) == null) return;
+
+        var gameData = Server.gameDAO.getGame(command.getGameID());
         Server.sessions.put(session, gameData.gameID());
         ChessGame game = gameData.game();
 
@@ -87,29 +96,21 @@ public class WebSocketHandler {
         loadGame.setGame(game);
         session.getRemote().sendString(gson.toJson(loadGame));
 
-        String note = "%s has joined the game".formatted(auth.username());
+        String note = "%s has joined the game".formatted(Server.authDAO.getAuth(command.getAuthToken()).username());
         notifyOthers(session, gameData.gameID(), note);
     }
 
     private void handleMakeMove(Session session, UserGameCommand command) throws IOException, DataAccessException {
-        var auth = Server.authDAO.getAuth(command.getAuthToken());
-        if (auth == null) {
-            sendError(session, "Invalid auth token");
-            return;
-        }
+        if (check(session, command) == null) return;
 
         var gameData = Server.gameDAO.getGame(command.getGameID());
-        if (gameData == null) {
-            sendError(session, "Game not found");
-            return;
-        }
 
         ChessGame game = gameData.game();
 
         ChessGame.TeamColor playerColor;
-        if (auth.username().equals(gameData.whiteUsername())) {
+        if (Server.authDAO.getAuth(command.getAuthToken()).username().equals(gameData.whiteUsername())) {
             playerColor = ChessGame.TeamColor.WHITE;
-        } else if (auth.username().equals(gameData.blackUsername())) {
+        } else if (Server.authDAO.getAuth(command.getAuthToken()).username().equals(gameData.blackUsername())) {
             playerColor = ChessGame.TeamColor.BLACK;
         } else {
             sendError(session, "User is not a player in this game");
@@ -148,8 +149,36 @@ public class WebSocketHandler {
                 entry.getKey().getRemote().sendString(gson.toJson(load));
 
                 ServerMessage notif = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                notif.setMessage("%s made a move".formatted(auth.username()));
+                notif.setMessage("%s made a move".formatted(Server.authDAO.getAuth(command.getAuthToken()).username()));
                 entry.getKey().getRemote().sendString(gson.toJson(notif));
+            }
+        }
+    }
+
+    private void handleResign (Session session, UserGameCommand command) throws IOException, DataAccessException {
+        if (check(session, command) == null) return;
+
+        var gameData = Server.gameDAO.getGame(command.getGameID());
+        ChessGame game = gameData.game();
+
+        game.setGameOver(true);
+
+        GameData updatedData = new GameData(
+                gameData.gameID(),
+                gameData.whiteUsername(),
+                gameData.blackUsername(),
+                gameData.gameName(),
+                game
+        );
+        Server.gameDAO.updateGame(updatedData);
+
+        ServerMessage resignMsg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        resignMsg.setMessage(Server.authDAO.getAuth(command.getAuthToken()).username() + " has resigned");
+        session.getRemote().sendString(gson.toJson(resignMsg));
+
+        for (var entry: Server.sessions.entrySet()) {
+            if (!entry.getKey().equals(session) && entry.getValue() == gameData.gameID()) {
+                entry.getKey().getRemote().sendString(gson.toJson(resignMsg));
             }
         }
     }
