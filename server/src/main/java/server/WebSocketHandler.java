@@ -28,7 +28,7 @@ public class WebSocketHandler {
         switch (command.getCommandType()) {
             case CONNECT -> handleConnect(session, command);
             case MAKE_MOVE -> handleMakeMove(session, command);
-//            case LEAVE -> handleLeave(session, command);
+            case LEAVE -> handleLeave(session, command);
             case RESIGN -> handleResign(session, command);
         }
     }
@@ -164,6 +164,12 @@ public class WebSocketHandler {
         if (check(session, command) == null) return;
 
         var gameData = Server.gameDAO.getGame(command.getGameID());
+        ChessGame game = gameData.game();
+
+        if (game.isGameOver()) {
+            sendError(session, "Game is already over");
+            return;
+        }
 
         String username = Server.authDAO.getAuth(command.getAuthToken()).username();
         boolean isWhite = username.equals(gameData.whiteUsername());
@@ -173,8 +179,6 @@ public class WebSocketHandler {
             sendError(session, "Only players can resign");
             return;
         }
-
-        ChessGame game = gameData.game();
 
         game.setGameOver(true);
 
@@ -188,12 +192,36 @@ public class WebSocketHandler {
         Server.gameDAO.updateGame(updatedData);
 
         ServerMessage resignMsg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        resignMsg.setMessage(Server.authDAO.getAuth(command.getAuthToken()).username() + " has resigned");
+        resignMsg.setMessage(username + " has resigned");
         session.getRemote().sendString(gson.toJson(resignMsg));
 
         for (var entry: Server.sessions.entrySet()) {
             if (!entry.getKey().equals(session) && entry.getValue() == gameData.gameID()) {
                 entry.getKey().getRemote().sendString(gson.toJson(resignMsg));
+            }
+        }
+    }
+
+    private void handleLeave(Session session, UserGameCommand command) throws IOException, DataAccessException {
+        if (check(session, command) == null) return;
+
+        var gameData = Server.gameDAO.getGame(command.getGameID());
+
+        Server.sessions.remove(session);
+
+
+        String username = Server.authDAO.getAuth(command.getAuthToken()).username();
+        boolean isWhite = username.equals(gameData.whiteUsername());
+        boolean isBlack = username.equals(gameData.blackUsername());
+
+        String role = isWhite ? "White" : (isBlack ? "Black" : "Observer");
+
+        ServerMessage notif = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        notif.setMessage("%s (%s) has left the game".formatted(username, role));
+
+        for (var entry : Server.sessions.entrySet()) {
+            if (!entry.getKey().equals(session) && entry.getValue() == gameData.gameID()) {
+                entry.getKey().getRemote().sendString(gson.toJson(notif));
             }
         }
     }
