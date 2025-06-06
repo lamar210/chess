@@ -264,4 +264,14 @@ public class ChessGame {
 
         return board;
     }
+
+    private boolean gameOver = false;
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void setGameOver(boolean value) {
+        gameOver = value;
+    }
 }
