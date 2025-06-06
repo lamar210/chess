@@ -107,6 +107,11 @@ public class WebSocketHandler {
 
         ChessGame game = gameData.game();
 
+        if (game.isGameOver()) {
+            sendError(session, "Game is already over");
+            return;
+        }
+
         ChessGame.TeamColor playerColor;
         if (Server.authDAO.getAuth(command.getAuthToken()).username().equals(gameData.whiteUsername())) {
             playerColor = ChessGame.TeamColor.WHITE;
@@ -159,6 +164,16 @@ public class WebSocketHandler {
         if (check(session, command) == null) return;
 
         var gameData = Server.gameDAO.getGame(command.getGameID());
+
+        String username = Server.authDAO.getAuth(command.getAuthToken()).username();
+        boolean isWhite = username.equals(gameData.whiteUsername());
+        boolean isBlack = username.equals(gameData.blackUsername());
+
+        if (!isWhite && !isBlack) {
+            sendError(session, "Only players can resign");
+            return;
+        }
+
         ChessGame game = gameData.game();
 
         game.setGameOver(true);
