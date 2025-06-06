@@ -214,6 +214,26 @@ public class WebSocketHandler {
         boolean isWhite = username.equals(gameData.whiteUsername());
         boolean isBlack = username.equals(gameData.blackUsername());
 
+        if (isWhite) {
+            gameData = new GameData(
+                    gameData.gameID(),
+                    null,
+                    gameData.blackUsername(),
+                    gameData.gameName(),
+                    gameData.game()
+            );
+            Server.gameDAO.updateGame(gameData);
+        } else if (isBlack) {
+            gameData = new GameData(
+                    gameData.gameID(),
+                    gameData.whiteUsername(),
+                    null,
+                    gameData.gameName(),
+                    gameData.game()
+            );
+            Server.gameDAO.updateGame(gameData);
+        }
+
         String role = isWhite ? "White" : (isBlack ? "Black" : "Observer");
 
         ServerMessage notif = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
