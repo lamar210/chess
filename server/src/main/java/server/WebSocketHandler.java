@@ -1,12 +1,15 @@
 package server;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
+import chess.ChessPosition;
 
 import java.io.IOException;
 
@@ -16,7 +19,6 @@ public class WebSocketHandler {
 
     @OnWebSocketConnect
     public void onConnect(Session session) {
-        System.out.print("Connected: " + session);
     }
 
     @OnWebSocketMessage
@@ -79,7 +81,6 @@ public class WebSocketHandler {
         }
 
         Server.sessions.put(session, gameData.gameID());
-
         ChessGame game = gameData.game();
 
         ServerMessage loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
@@ -105,13 +106,51 @@ public class WebSocketHandler {
 
         ChessGame game = gameData.game();
 
+        ChessGame.TeamColor playerColor;
+        if (auth.username().equals(gameData.whiteUsername())) {
+            playerColor = ChessGame.TeamColor.WHITE;
+        } else if (auth.username().equals(gameData.blackUsername())) {
+            playerColor = ChessGame.TeamColor.BLACK;
+        } else {
+            sendError(session, "User is not a player in this game");
+            return;
+        }
+
+        if (game.getTeamTurn() != playerColor) {
+            sendError(session, "It is not your turn");
+            return;
+        }
+
+        var move = command.getMove();
         try {
-            game.makeMove(command.getMove());
-            Server.gameDAO.updateGame(gameData);
+
+            game.makeMove(move);
+            GameData updatedData = new GameData(
+                    gameData.gameID(),
+                    gameData.whiteUsername(),
+                    gameData.blackUsername(),
+                    gameData.gameName(),
+                    game
+            );
+            Server.gameDAO.updateGame(updatedData);
+
         } catch (Exception ex) {
             sendError(session, "Illegal move: " + ex.getMessage());
             return;
         }
         sendGame(session, game);
+
+        for (var entry: Server.sessions.entrySet()) {
+            if (!entry.getKey().equals(session) && entry.getValue() == gameData.gameID()) {
+
+                ServerMessage load = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+                load.setGame(game);
+                entry.getKey().getRemote().sendString(gson.toJson(load));
+
+                ServerMessage notif = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                notif.setMessage("%s made a move".formatted(auth.username()));
+                entry.getKey().getRemote().sendString(gson.toJson(notif));
+            }
+        }
     }
 }
