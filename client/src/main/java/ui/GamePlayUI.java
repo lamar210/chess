@@ -148,7 +148,6 @@ public class GamePlayUI implements ServerMessageObserver {
                 ChessGame updateGame = message.getGame();
                 boardLayout = new BoardLayout(updateGame);
                 boardLayout.displayBoard(color, null);
-                System.out.print("Game loaded! Redrawing board...");
             }
             case NOTIFICATION -> {
                 System.out.print("Notification: " + message.getMessage());
