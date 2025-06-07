@@ -1,6 +1,5 @@
 package server;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
@@ -9,8 +8,6 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.*;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
-import chess.ChessPosition;
-
 import java.io.IOException;
 
 @WebSocket
