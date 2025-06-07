@@ -40,7 +40,7 @@ public class GamePlayUI implements ServerMessageObserver {
     }
 
 
-    public void run() throws IOException {
+    public void run() throws Exception {
         try {
             ws = new WebSocket(this, facade.getAuthToken(), gameID);
         } catch (Exception ex) {

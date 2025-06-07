@@ -2,7 +2,10 @@ package ui;
 
 import client.ServerFacade;
 import chess.ChessGame;
+import client.ServerMessageObserver;
+import client.WebSocket;
 import model.GameData;
+import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
 import java.io.IOException;
@@ -19,7 +22,7 @@ public class PostLogin {
         this.facade = facade;
     }
 
-    public void run() throws IOException {
+    public void run() throws Exception {
         boolean loggedIn = true;
 
         while (loggedIn) {
@@ -73,6 +76,9 @@ public class PostLogin {
                             : ChessGame.TeamColor.BLACK;
 
                     if (facade.joinGame(color, game.gameID())) {
+                        ServerMessageObserver observer = new GamePlayUI(facade, game, color);
+                        WebSocket ws = new WebSocket(observer, facade.getAuthToken(), game.gameID());
+                        facade.setWebSocket(ws);
 
                         ChessGame joinedGame = game.game();
                         joinedGame.getBoard().resetBoard();

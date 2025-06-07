@@ -14,7 +14,7 @@ public class PreLogin {
         this.facade = facade;
     }
 
-    public void run() throws IOException {
+    public void run() throws Exception {
         boolean loggedIn = false;
 
         while (!loggedIn) {
