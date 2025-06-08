@@ -65,4 +65,15 @@ public class BoardLayout {
             case PAWN -> isWhite ? WHITE_PAWN : BLACK_PAWN;
         };
     }
+
+    public void updateBoard(ChessBoard newBoard) {
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = newBoard.getPiece(pos);
+                this.game.getBoard().addPiece(pos, piece);
+            }
+        }
+    }
+
 }

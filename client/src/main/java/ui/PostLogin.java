@@ -76,14 +76,11 @@ public class PostLogin {
                             : ChessGame.TeamColor.BLACK;
 
                     if (facade.joinGame(color, game.gameID())) {
-                        ServerMessageObserver observer = new GamePlayUI(facade, game, color);
-                        WebSocket ws = new WebSocket(observer, facade.getAuthToken(), game.gameID());
-                        facade.setWebSocket(ws);
-
+                        GamePlayUI gameplay = new GamePlayUI(facade, game, color);
+                        
                         ChessGame joinedGame = game.game();
                         joinedGame.getBoard().resetBoard();
 
-                        GamePlayUI gameplay = new GamePlayUI(facade, game, color);
                         gameplay.run();
                     } else {
                         System.out.println("Join failed. Color may be taken :/");

@@ -14,21 +14,11 @@ import java.util.Scanner;
 public class GamePlayUI implements ServerMessageObserver {
 
     ServerFacade facade;
-    private WebSocket ws;
     public static BoardLayout boardLayout;
     int gameID;
     ChessGame.TeamColor color;
     GameData gameData;
     ChessGame game;
-
-    public GamePlayUI(ServerFacade facade, GameData gameData) {
-        this.facade = facade;
-        this.gameID = gameData.gameID();
-        this.color= null;
-        this.gameData = gameData;
-        this.game = gameData.game();
-        boardLayout = new BoardLayout(game);
-    }
 
     public GamePlayUI(ServerFacade facade, GameData gameData, ChessGame.TeamColor color) {
         this.facade = facade;
@@ -42,7 +32,8 @@ public class GamePlayUI implements ServerMessageObserver {
 
     public void run() throws Exception {
         try {
-            ws = new WebSocket(this, facade.getAuthToken(), gameID);
+            WebSocket ws = new WebSocket(this, facade.getAuthToken(), gameID);
+            facade.setWebSocket(ws);
         } catch (Exception ex) {
             System.out.print("Couldn't connect to server: " + ex.getMessage());
             return;
@@ -146,7 +137,7 @@ public class GamePlayUI implements ServerMessageObserver {
         switch (message.getServerMessageType()) {
             case LOAD_GAME -> {
                 ChessGame updateGame = message.getGame();
-                boardLayout = new BoardLayout(updateGame);
+                boardLayout.updateBoard(updateGame.getBoard());
                 boardLayout.displayBoard(color, null);
             }
             case NOTIFICATION -> {
