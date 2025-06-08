@@ -143,6 +143,9 @@ public class WebSocketHandler {
         }
         sendGame(session, game);
 
+        String u = Server.authDAO.getAuth(command.getAuthToken()).username();
+        notifyOthers(session, gameData.gameID(), "%s made a move" + u);
+
         for (var entry: Server.sessions.entrySet()) {
             if (!entry.getKey().equals(session) && entry.getValue() == gameData.gameID()) {
 
@@ -150,9 +153,6 @@ public class WebSocketHandler {
                 load.setGame(game);
                 entry.getKey().getRemote().sendString(gson.toJson(load));
 
-                ServerMessage notif = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                notif.setMessage("%s made a move".formatted(Server.authDAO.getAuth(command.getAuthToken()).username()));
-                entry.getKey().getRemote().sendString(gson.toJson(notif));
             }
         }
     }
@@ -188,15 +188,8 @@ public class WebSocketHandler {
         );
         Server.gameDAO.updateGame(updatedData);
 
-        ServerMessage resignMsg = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        resignMsg.setMessage(username + " has resigned");
-        session.getRemote().sendString(gson.toJson(resignMsg));
-
-        for (var entry: Server.sessions.entrySet()) {
-            if (!entry.getKey().equals(session) && entry.getValue() == gameData.gameID()) {
-                entry.getKey().getRemote().sendString(gson.toJson(resignMsg));
-            }
-        }
+        String u = Server.authDAO.getAuth(command.getAuthToken()).username();
+        notifyOthers(session, gameData.gameID(), String.format(" %s has resigned", u));
     }
 
     private void handleLeave(Session session, UserGameCommand command) throws IOException, DataAccessException {
@@ -231,15 +224,7 @@ public class WebSocketHandler {
             Server.gameDAO.updateGame(gameData);
         }
 
-        String role = isWhite ? "White" : (isBlack ? "Black" : "Observer");
-
-        ServerMessage notif = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        notif.setMessage("%s (%s) has left the game".formatted(username, role));
-
-        for (var entry : Server.sessions.entrySet()) {
-            if (!entry.getKey().equals(session) && entry.getValue() == gameData.gameID()) {
-                entry.getKey().getRemote().sendString(gson.toJson(notif));
-            }
-        }
+        String u = Server.authDAO.getAuth(command.getAuthToken()).username();
+        notifyOthers(session, gameData.gameID(), String.format(" %s has left the game", u));
     }
 }
