@@ -49,15 +49,15 @@ public class PostLogin {
                     games = facade.listGames();
                     int i = 1;
                     for (GameData game : games) {
-                        System.out.printf("%d. Game: %s, White: %s, Green: %s\n",
+                        System.out.printf("%d. Game: %s, White: %s, Black: %s\n",
                                 i++, game.gameName(), game.whiteUsername(), game.blackUsername());
                     }
                 }
                 case "join" -> {
 
                     if (input.length != 3 || !input[1].matches("\\d+") ||
-                            !input[2].equalsIgnoreCase("white") && !input[2].equalsIgnoreCase("green")) {
-                        System.out.println("Usage: join <ID> [WHITE|GREEN]");
+                            !input[2].equalsIgnoreCase("white") && !input[2].equalsIgnoreCase("black")) {
+                        System.out.println("Usage: join <ID> [WHITE|BLACK]");
                         break;
                     }
 
@@ -77,7 +77,7 @@ public class PostLogin {
 
                     if (facade.joinGame(color, game.gameID())) {
                         GamePlayUI gameplay = new GamePlayUI(facade, game, color);
-                        
+
                         ChessGame joinedGame = game.game();
                         joinedGame.getBoard().resetBoard();
 
@@ -140,7 +140,7 @@ public class PostLogin {
     private void helpMenu() {
         System.out.println("create <NAME>             - Create a new game");
         System.out.println("list                      - List available games");
-        System.out.println("join <ID> [WHITE|GREEN]   - Join a game as a player");
+        System.out.println("join <ID> [WHITE|BLACK]   - Join a game as a player");
         System.out.println("logout                    - Log out of your account");
         System.out.println("observe                   - Observe a game");
         System.out.println("help                      - Show available commands");

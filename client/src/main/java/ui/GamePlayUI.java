@@ -94,6 +94,7 @@ public class GamePlayUI implements ServerMessageObserver {
         Scanner scanner = new Scanner(System.in);
         return scanner.nextLine().split(" ");
     }
+
     private void helpMenu(){
         System.out.println("redraw - redraw the Chess Board");
         System.out.println("leave - leave the game");
@@ -102,6 +103,7 @@ public class GamePlayUI implements ServerMessageObserver {
         System.out.println("highlight <coordinates> - highlight all legal moves for the piece");
         System.out.println("help - with possible commands");
     }
+
     private void makeMove(String[] input) throws IOException {
         if (input.length >= 3 && input[1].matches("[a-h][1-8]") && input[2].matches("[a-h][1-8]")){
             ChessPosition from = new ChessPosition(input[1].charAt(1) - '0', input[1].charAt(0) - 'a' + 1);
