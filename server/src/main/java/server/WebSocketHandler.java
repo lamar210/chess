@@ -87,6 +87,7 @@ public class WebSocketHandler {
 
         var gameData = Server.gameDAO.getGame(command.getGameID());
         Server.sessions.put(session, gameData.gameID());
+
         ChessGame game = gameData.game();
 
         ServerMessage loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
