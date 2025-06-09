@@ -175,8 +175,9 @@ public class ServerFacade {
         ws.sendMessage(new Gson().toJson(cmd));
     }
 
-    public void redraw(Integer gameID, ChessGame game, ChessGame.TeamColor color) {
+    public void redraw(Integer gameID, ChessGame game) {
         ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        msg.setGame(game);
         String command = new Gson().toJson(msg);
         ws.handleMessage(command);
     }

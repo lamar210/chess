@@ -47,18 +47,13 @@ public class WebSocket extends Endpoint{
     public void handleMessage(String message){
         ServerMessage msg = new Gson().fromJson(message, ServerMessage.class);
 
-        switch (msg.getServerMessageType()) {
-            case LOAD_GAME -> {
-                ChessGame updateGame = msg.getGame();
-                GamePlayUI.boardLayout.updateBoard(updateGame.getBoard());
-                GamePlayUI.boardLayout.displayBoard(color, null);
-            }
-            case ERROR -> {
-                System.out.println("Error: " + msg.getErrorMessage());
-            }
-            case NOTIFICATION -> {
-                System.out.println("Notification: " + msg.getMessage());
-            }
+        if (msg.getServerMessageType().equals(ServerMessage.ServerMessageType.LOAD_GAME)) {
+            GamePlayUI.boardLayout.updateBoard(msg.getGame().getBoard());
+            GamePlayUI.boardLayout.displayBoard(color, null);
+        } else if (msg.getServerMessageType().equals(ServerMessage.ServerMessageType.NOTIFICATION)) {
+            System.out.println(msg.getMessage());
+        } else if (msg.getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR)) {
+            System.out.println(msg.getErrorMessage());
         }
     }
 
