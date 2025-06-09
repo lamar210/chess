@@ -144,7 +144,7 @@ public class WebSocketHandler {
         sendGame(session, game);
 
         String u = Server.authDAO.getAuth(command.getAuthToken()).username();
-        notifyOthers(session, gameData.gameID(), "%s made a move" + u);
+        notifyOthers(session, gameData.gameID(), String.format("%s made a move", u));
 
         for (var entry: Server.sessions.entrySet()) {
             if (!entry.getKey().equals(session) && entry.getValue() == gameData.gameID()) {
