@@ -16,15 +16,23 @@ import websocket.messages.ServerMessage;
 public class WebSocket extends Endpoint{
 
     Session session;
-    private final ServerMessageObserver observer;
 
-    public WebSocket(ServerMessageObserver observer, String authToken, int gameID) throws Exception {
-        this.observer = observer;
+    private final ChessGame.TeamColor color;
+
+    public WebSocket(ChessGame.TeamColor color, String authToken, int gameID) throws Exception {
+        this.color = color;
+
         try {
             URI uri = new URI("ws://localhost:8080/ws");
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, uri);
 
+            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+                @Override
+                public void onMessage(String msg) {
+                    handleMessage(msg);
+                }
+            });
             UserGameCommand connectedCmd = new UserGameCommand(
                     UserGameCommand.CommandType.CONNECT, authToken, gameID);
 
@@ -36,7 +44,7 @@ public class WebSocket extends Endpoint{
         }
     }
 
-    public void handleMessage(String message, ChessGame.TeamColor color){
+    public void handleMessage(String message){
         ServerMessage msg = new Gson().fromJson(message, ServerMessage.class);
 
         switch (msg.getServerMessageType()) {
@@ -54,18 +62,11 @@ public class WebSocket extends Endpoint{
         }
     }
 
-    public void sendMessage(String message) throws IOException {
-        this.session.getBasicRemote().sendText(message);
-    }
-
     @Override
     public void onOpen (Session session, EndpointConfig endpointConfig) {
     }
 
-    @OnMessage
-    public void onMessage(String message) {
-        ServerMessage msg = new Gson().fromJson(message, ServerMessage.class);
-        observer.notify(msg);
+    public void sendMessage(String message) throws IOException {
+        this.session.getBasicRemote().sendText(message);
     }
-
 }

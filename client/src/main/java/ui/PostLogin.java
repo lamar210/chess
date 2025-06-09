@@ -2,7 +2,6 @@ package ui;
 
 import client.ServerFacade;
 import chess.ChessGame;
-import client.ServerMessageObserver;
 import client.WebSocket;
 import model.GameData;
 import websocket.messages.ServerMessage;

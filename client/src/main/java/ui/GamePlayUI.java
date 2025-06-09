@@ -2,7 +2,6 @@ package ui;
 
 import chess.*;
 import client.ServerFacade;
-import client.ServerMessageObserver;
 import client.WebSocket;
 import model.GameData;
 import websocket.messages.ServerMessage;
@@ -11,7 +10,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class GamePlayUI implements ServerMessageObserver {
+public class GamePlayUI {
 
     ServerFacade facade;
     public static BoardLayout boardLayout;
@@ -32,8 +31,9 @@ public class GamePlayUI implements ServerMessageObserver {
 
     public void run() throws Exception {
         try {
-            WebSocket ws = new WebSocket(this, facade.getAuthToken(), gameID);
+            WebSocket ws = new WebSocket (color, facade.getAuthToken(), gameID);
             facade.setWebSocket(ws);
+
         } catch (Exception ex) {
             System.out.print("Couldn't connect to server: " + ex.getMessage());
             return;
@@ -135,20 +135,6 @@ public class GamePlayUI implements ServerMessageObserver {
         };
     }
 
-    public void notify(ServerMessage message) {
-        switch (message.getServerMessageType()) {
-            case LOAD_GAME -> {
-                ChessGame updateGame = message.getGame();
-                boardLayout.updateBoard(updateGame.getBoard());
-                boardLayout.displayBoard(color, null);
-            }
-            case NOTIFICATION -> {
-                System.out.println("Notification: " + message.getMessage());
-            }
-            case ERROR -> {
-                System.out.println("Error " + message.getErrorMessage());
-            }
-        }
-    }
+
 
 }
