@@ -143,10 +143,10 @@ public class GamePlayUI implements ServerMessageObserver {
                 boardLayout.displayBoard(color, null);
             }
             case NOTIFICATION -> {
-                System.out.print("Notification: " + message.getMessage());
+                System.out.println("Notification: " + message.getMessage());
             }
             case ERROR -> {
-                System.out.print("Error " + message.getErrorMessage());
+                System.out.println("Error " + message.getErrorMessage());
             }
         }
     }

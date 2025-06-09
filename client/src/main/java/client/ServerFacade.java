@@ -6,6 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import model.GameData;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
 
 
 import java.io.IOException;
@@ -172,5 +173,11 @@ public class ServerFacade {
     public void sendLeaveGame(int gameID, String authToken) throws IOException {
         UserGameCommand cmd = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
         ws.sendMessage(new Gson().toJson(cmd));
+    }
+
+    public void redraw(Integer gameID, ChessGame game, ChessGame.TeamColor color) {
+        ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        String command = new Gson().toJson(msg);
+        ws.handleMessage(command, color);
     }
 }

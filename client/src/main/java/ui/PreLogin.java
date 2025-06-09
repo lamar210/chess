@@ -3,7 +3,6 @@ package ui;
 import client.ServerFacade;
 
 
-import java.io.IOException;
 import java.util.Scanner;
 
 public class PreLogin {

@@ -5,12 +5,15 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
+import ui.BoardLayout;
+import ui.GamePlayUI;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
 @ClientEndpoint
-public class WebSocket {
+public class WebSocket extends Endpoint{
 
     Session session;
     private final ServerMessageObserver observer;
@@ -33,8 +36,30 @@ public class WebSocket {
         }
     }
 
+    public void handleMessage(String message, ChessGame.TeamColor color){
+        ServerMessage msg = new Gson().fromJson(message, ServerMessage.class);
+
+        switch (msg.getServerMessageType()) {
+            case LOAD_GAME -> {
+                ChessGame updateGame = msg.getGame();
+                GamePlayUI.boardLayout.updateBoard(updateGame.getBoard());
+                GamePlayUI.boardLayout.displayBoard(color, null);
+            }
+            case ERROR -> {
+                System.out.println("Error: " + msg.getErrorMessage());
+            }
+            case NOTIFICATION -> {
+                System.out.println("Notification: " + msg.getMessage());
+            }
+        }
+    }
+
     public void sendMessage(String message) throws IOException {
         this.session.getBasicRemote().sendText(message);
+    }
+
+    @Override
+    public void onOpen (Session session, EndpointConfig endpointConfig) {
     }
 
     @OnMessage
