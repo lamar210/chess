@@ -58,6 +58,17 @@ public class WebSocketHandler {
         }
     }
 
+    private void notifyAll( int gameID, String message) throws IOException {
+        ServerMessage notify = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        notify.setMessage(message);
+
+        for (var entry : Server.sessions.entrySet()) {
+            if (entry.getValue() == gameID) {
+                entry.getKey().getRemote().sendString(gson.toJson(notify));
+            }
+        }
+    }
+
     private void loadGame(int gameID, ChessGame game) throws IOException {
         ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
         msg.setGame(game);
@@ -99,7 +110,7 @@ public class WebSocketHandler {
         session.getRemote().sendString(gson.toJson(loadGame));
 
         String note = String.format("%s has joined the game", Server.authDAO.getAuth(command.getAuthToken()).username());
-        notifyOthers(session, gameData.gameID(), note);
+        notifyAll(gameData.gameID(), note);
     }
 
     private void handleMakeMove(Session session, UserGameCommand command) throws IOException, DataAccessException {
