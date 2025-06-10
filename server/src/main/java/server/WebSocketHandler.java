@@ -205,10 +205,6 @@ public class WebSocketHandler {
         String u = Server.authDAO.getAuth(command.getAuthToken()).username();
         String msg = String.format("%s has resigned", u);
         notifyAll(gameData.gameID(), msg);
-
-        ServerMessage notif = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        notif.setMessage(msg);
-        session.getRemote().sendString(gson.toJson(notif));
     }
 
     private void handleLeave(Session session, UserGameCommand command) throws IOException, DataAccessException {
