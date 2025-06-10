@@ -172,6 +172,10 @@ public class ServerFacade {
         cmd.setMove(move);
         ws.sendMessage(new Gson().toJson(cmd));
     }
+    public void joinPlayer(int gameID) throws IOException {
+        UserGameCommand msg = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+        ws.sendMessage(new Gson().toJson(msg));
+    }
 
     public void sendResign(int gameID, String authToken) throws  IOException {
         UserGameCommand cmd = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);

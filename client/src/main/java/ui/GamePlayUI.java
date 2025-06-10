@@ -30,15 +30,6 @@ public class GamePlayUI {
 
 
     public void run() throws Exception {
-        try {
-            WebSocket ws = new WebSocket (color, facade.getAuthToken(), gameID);
-            facade.setWebSocket(ws);
-
-        } catch (Exception ex) {
-            System.out.print("Couldn't connect to server: " + ex.getMessage());
-            return;
-        }
-        facade.connToWs(color, gameID);
         System.out.print("Connected successfully! You are connected for live gameplay");
 
 
