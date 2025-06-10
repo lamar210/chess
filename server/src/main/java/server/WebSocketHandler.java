@@ -47,16 +47,16 @@ public class WebSocketHandler {
         session.getRemote().sendString(gson.toJson(error));
     }
 
-    private void notifyOthers(Session sender, int gameID, String message) throws IOException {
-        ServerMessage notify = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        notify.setMessage(message);
-
-        for (var entry : Server.sessions.entrySet()) {
-            if (!entry.getKey().equals(sender) && entry.getValue() == gameID) {
-                entry.getKey().getRemote().sendString(gson.toJson(notify));
-            }
-        }
-    }
+//    private void notifyOthers(Session sender, int gameID, String message) throws IOException {
+//        ServerMessage notify = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+//        notify.setMessage(message);
+//
+//        for (var entry : Server.sessions.entrySet()) {
+//            if (!entry.getKey().equals(sender) && entry.getValue() == gameID) {
+//                entry.getKey().getRemote().sendString(gson.toJson(notify));
+//            }
+//        }
+//    }
 
     private void notifyAll( int gameID, String message) throws IOException {
         ServerMessage notify = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
@@ -109,7 +109,12 @@ public class WebSocketHandler {
         loadGame.setGame(gameData.game());
         session.getRemote().sendString(gson.toJson(loadGame));
 
-        String note = String.format("%s has joined the game", Server.authDAO.getAuth(command.getAuthToken()).username());
+        String note;
+        if (Server.authDAO.getAuth(command.getAuthToken()).username().equals(gameData.whiteUsername())) {
+            note = String.format("%s has joined the game as white", Server.authDAO.getAuth(command.getAuthToken()).username());
+        } else {
+            note = String.format("%s has joined the game as black", Server.authDAO.getAuth(command.getAuthToken()).username());
+        }
         notifyAll(gameData.gameID(), note);
     }
 
@@ -162,7 +167,7 @@ public class WebSocketHandler {
 
         String u = Server.authDAO.getAuth(command.getAuthToken()).username();
         String msg =  String.format("%s made a move", u);
-        notifyOthers(session, gameData.gameID(), msg);
+        notifyAll(gameData.gameID(), msg);
 
     }
 
@@ -199,7 +204,7 @@ public class WebSocketHandler {
 
         String u = Server.authDAO.getAuth(command.getAuthToken()).username();
         String msg = String.format("%s has resigned", u);
-        notifyOthers(session, gameData.gameID(), msg);
+        notifyAll(gameData.gameID(), msg);
 
         ServerMessage notif = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
         notif.setMessage(msg);
@@ -239,6 +244,6 @@ public class WebSocketHandler {
         }
 
         String u = Server.authDAO.getAuth(command.getAuthToken()).username();
-        notifyOthers(session, gameData.gameID(), String.format(" %s has left the game", u));
+        notifyAll(gameData.gameID(), String.format(" %s has left the game", u));
     }
 }
