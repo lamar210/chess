@@ -58,10 +58,16 @@ public class WebSocketHandler {
         }
     }
 
-    private void sendGame(Session session, ChessGame game) throws IOException {
-        ServerMessage message = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        message.setGame(game);
-        session.getRemote().sendString(gson.toJson(message));
+    private void loadGame(int gameID, ChessGame game) throws IOException {
+        ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+        msg.setGame(game);
+        String json = gson.toJson(msg);
+
+        for (var entry : Server.sessions.entrySet()) {
+            if (entry.getValue() == gameID) {
+                entry.getKey().getRemote().sendString(json);
+            }
+        }
     }
 
     private record AuthAndGame(model.AuthData auth, GameData gameData) {}
@@ -88,13 +94,11 @@ public class WebSocketHandler {
         var gameData = Server.gameDAO.getGame(command.getGameID());
         Server.sessions.put(session, gameData.gameID());
 
-        ChessGame game = gameData.game();
-
         ServerMessage loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        loadGame.setGame(game);
+        loadGame.setGame(gameData.game());
         session.getRemote().sendString(gson.toJson(loadGame));
 
-        String note = "%s has joined the game".formatted(Server.authDAO.getAuth(command.getAuthToken()).username());
+        String note = String.format("%s has joined the game", Server.authDAO.getAuth(command.getAuthToken()).username());
         notifyOthers(session, gameData.gameID(), note);
     }
 
@@ -142,20 +146,13 @@ public class WebSocketHandler {
             sendError(session, "Illegal move: " + ex.getMessage());
             return;
         }
-        sendGame(session, game);
+
+        loadGame(gameData.gameID(), game);
 
         String u = Server.authDAO.getAuth(command.getAuthToken()).username();
-        notifyOthers(session, gameData.gameID(), String.format("%s made a move", u));
+        String msg =  String.format("%s made a move", u);
+        notifyOthers(session, gameData.gameID(), msg);
 
-        for (var entry: Server.sessions.entrySet()) {
-            if (!entry.getKey().equals(session) && entry.getValue() == gameData.gameID()) {
-
-                ServerMessage load = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-                load.setGame(game);
-                entry.getKey().getRemote().sendString(gson.toJson(load));
-
-            }
-        }
     }
 
     private void handleResign (Session session, UserGameCommand command) throws IOException, DataAccessException {
