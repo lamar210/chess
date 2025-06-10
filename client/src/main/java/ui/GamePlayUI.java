@@ -38,6 +38,7 @@ public class GamePlayUI {
             System.out.print("Couldn't connect to server: " + ex.getMessage());
             return;
         }
+        facade.connToWs(color, gameID);
         System.out.print("Connected successfully! You are connected for live gameplay");
 
 

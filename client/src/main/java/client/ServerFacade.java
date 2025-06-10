@@ -144,6 +144,14 @@ public class ServerFacade {
         return new Gson().fromJson(gamesJson, new TypeToken<Collection<GameData>>(){}.getType());
     }
 
+    public void connToWs (ChessGame.TeamColor color, int gameID) {
+        try {
+            ws = new WebSocket(color, authToken, gameID);
+        } catch (Exception ex) {
+            System.err.println("Failed to open ws: " + ex.getMessage());
+        }
+    }
+
     public boolean joinGame(ChessGame.TeamColor color, int gameID) {
         Map body;
 
