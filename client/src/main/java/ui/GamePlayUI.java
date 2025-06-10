@@ -30,9 +30,7 @@ public class GamePlayUI {
 
 
     public void run() throws Exception {
-        System.out.print("Connected successfully! You are connected for live gameplay");
-
-
+//        System.out.print("Connected successfully! You are connected for live gameplay");
         boolean in = true;
         while (in){
             String[] input = getInput();
@@ -101,6 +99,7 @@ public class GamePlayUI {
             ChessPosition from = new ChessPosition(input[1].charAt(1) - '0', input[1].charAt(0) - 'a' + 1);
             ChessPosition to = new ChessPosition(input[2].charAt(1) - '0', input[2].charAt(0) - 'a' + 1);
             ChessPiece.PieceType promotion = null;
+
             if (input.length == 4){
                 promotion = getPieceType(input[3]);
                 if (promotion == null){
@@ -112,7 +111,7 @@ public class GamePlayUI {
                 facade.sendMakeMove(gameID, facade.getAuthToken(), new ChessMove(from, to, promotion));
             }
         } else{
-            System.out.println("please provide from and to coordinates. ex: 2a 1c");
+            System.out.println("please provide from and to coordinates. ex: a2 c1");
             System.out.println("move <from> <to> <promotion piece> - (promotion piece should only be used if a move will promote a pawn)");
         }
     }
@@ -126,7 +125,4 @@ public class GamePlayUI {
             default -> null;
         };
     }
-
-
-
 }

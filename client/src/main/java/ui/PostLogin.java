@@ -75,12 +75,12 @@ public class PostLogin {
                             : ChessGame.TeamColor.BLACK;
 
                     if (facade.joinGame(color, game.gameID())) {
-                        ChessGame joinedGame = game.game();
-                        joinedGame.getBoard().resetBoard();
+//                        ChessGame joinedGame = game.game();
+//                        joinedGame.getBoard().resetBoard();
+                        GamePlayUI gameplay = new GamePlayUI(facade, game, color);
                         facade.connToWs(color, game.gameID());
                         facade.joinPlayer(game.gameID());
 
-                        GamePlayUI gameplay = new GamePlayUI(facade, game, color);
                         gameplay.run();
                     } else {
                         System.out.println("Join failed. Color may be taken :/");
