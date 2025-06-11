@@ -91,7 +91,6 @@ public class PostLogin {
         if (facade.joinGame(color, game.gameID())) {
             GamePlayUI gameplay = new GamePlayUI(facade, game, color);
             facade.connToWs(color, game.gameID());
-            facade.joinPlayer(game.gameID());
             gameplay.run();
         } else {
             System.out.println("Join failed. Color may be taken :/");
@@ -128,6 +127,8 @@ public class PostLogin {
         GameData game = gameList.get(gameIndex);
         ChessGame observedGame = game.game();
         observedGame.getBoard().resetBoard();
+
+        facade.connToWs(null, game.gameID());
 
         BoardLayout layout = new BoardLayout(observedGame);
         layout.displayBoard(ChessGame.TeamColor.WHITE, null);

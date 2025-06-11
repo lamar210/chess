@@ -147,6 +147,8 @@ public class ServerFacade {
     public void connToWs (ChessGame.TeamColor color, int gameID) {
         try {
             ws = new WebSocket(color, authToken, gameID);
+            UserGameCommand connect = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+            ws.sendMessage(new Gson().toJson(connect));
         } catch (Exception ex) {
             System.err.println("Failed to open ws: " + ex.getMessage());
         }
@@ -171,10 +173,6 @@ public class ServerFacade {
         UserGameCommand cmd = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID);
         cmd.setMove(move);
         ws.sendMessage(new Gson().toJson(cmd));
-    }
-    public void joinPlayer(int gameID) throws IOException {
-        UserGameCommand msg = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
-        ws.sendMessage(new Gson().toJson(msg));
     }
 
     public void sendResign(int gameID, String authToken) throws  IOException {
