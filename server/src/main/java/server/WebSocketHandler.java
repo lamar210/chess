@@ -108,8 +108,7 @@ public class WebSocketHandler {
     }
 
     private void handleConnect(Session session, UserGameCommand command) throws IOException, DataAccessException {
-        if (check(session, command) == null)
-        {
+        if (check(session, command) == null) {
             return;
         }
 
@@ -120,12 +119,16 @@ public class WebSocketHandler {
         loadGame.setGame(gameData.game());
         session.getRemote().sendString(gson.toJson(loadGame));
 
+        String username = Server.authDAO.getAuth(command.getAuthToken()).username();
         String note;
-        if (Server.authDAO.getAuth(command.getAuthToken()).username().equals(gameData.whiteUsername())) {
+        if (username.equals(gameData.whiteUsername())) {
             note = String.format("%s has joined the game as white", Server.authDAO.getAuth(command.getAuthToken()).username());
-        } else {
+        } else if (username.equals(gameData.blackUsername())) {
             note = String.format("%s has joined the game as black", Server.authDAO.getAuth(command.getAuthToken()).username());
+        } else {
+            note = String.format("%s joined the game as an observer", username);
         }
+        System.out.println("Notify others: " + note);
         notifyOthers(session, gameData.gameID(), note);
     }
 
