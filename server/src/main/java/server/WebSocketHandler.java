@@ -47,16 +47,16 @@ public class WebSocketHandler {
         session.getRemote().sendString(gson.toJson(error));
     }
 
-//    private void notifyOthers(Session sender, int gameID, String message) throws IOException {
-//        ServerMessage notify = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-//        notify.setMessage(message);
-//
-//        for (var entry : Server.sessions.entrySet()) {
-//            if (!entry.getKey().equals(sender) && entry.getValue() == gameID) {
-//                entry.getKey().getRemote().sendString(gson.toJson(notify));
-//            }
-//        }
-//    }
+    private void notifyOthers(Session sender, int gameID, String message) throws IOException {
+        ServerMessage notify = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+        notify.setMessage(message);
+
+        for (var entry : Server.sessions.entrySet()) {
+            if (!entry.getKey().equals(sender) && entry.getValue() == gameID) {
+                entry.getKey().getRemote().sendString(gson.toJson(notify));
+            }
+        }
+    }
 
     private void notifyAll( int gameID, String message) throws IOException {
         ServerMessage notify = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
@@ -115,7 +115,7 @@ public class WebSocketHandler {
         } else {
             note = String.format("%s has joined the game as black", Server.authDAO.getAuth(command.getAuthToken()).username());
         }
-        notifyAll(gameData.gameID(), note);
+        notifyOthers(session, gameData.gameID(), note);
     }
 
     private void handleMakeMove(Session session, UserGameCommand command) throws IOException, DataAccessException {
@@ -167,7 +167,7 @@ public class WebSocketHandler {
 
         String u = Server.authDAO.getAuth(command.getAuthToken()).username();
         String msg =  String.format("%s made a move", u);
-        notifyAll(gameData.gameID(), msg);
+        notifyOthers(session, gameData.gameID(), msg);
 
     }
 
