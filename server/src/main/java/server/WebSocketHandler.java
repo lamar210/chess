@@ -108,7 +108,10 @@ public class WebSocketHandler {
     }
 
     private void handleConnect(Session session, UserGameCommand command) throws IOException, DataAccessException {
-        if (check(session, command) == null) return;
+        if (check(session, command) == null)
+        {
+            return;
+        }
 
         var gameData = Server.gameDAO.getGame(command.getGameID());
         Server.sessions.put(session, gameData.gameID());
@@ -127,7 +130,10 @@ public class WebSocketHandler {
     }
 
     private void handleMakeMove(Session session, UserGameCommand command) throws IOException, DataAccessException {
-        if (check(session, command) == null) return;
+        if (check(session, command) == null)
+        {
+            return;
+        }
 
         var gameData = Server.gameDAO.getGame(command.getGameID());
 
@@ -182,7 +188,10 @@ public class WebSocketHandler {
     }
 
     private void handleResign (Session session, UserGameCommand command) throws IOException, DataAccessException {
-        if (check(session, command) == null) return;
+        if (check(session, command) == null)
+        {
+            return;
+        }
 
         var gameData = Server.gameDAO.getGame(command.getGameID());
         ChessGame game = gameData.game();
@@ -218,7 +227,10 @@ public class WebSocketHandler {
     }
 
     private void handleLeave(Session session, UserGameCommand command) throws IOException, DataAccessException {
-        if (check(session, command) == null) return;
+        if (check(session, command) == null)
+        {
+            return;
+        }
 
         var gameData = Server.gameDAO.getGame(command.getGameID());
 
