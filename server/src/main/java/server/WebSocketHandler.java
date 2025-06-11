@@ -250,6 +250,6 @@ public class WebSocketHandler {
         }
 
         String u = Server.authDAO.getAuth(command.getAuthToken()).username();
-        notifyAll(gameData.gameID(), String.format(" %s has left the game", u));
+        notifyAll(gameData.gameID(), String.format("%s has left the game", u));
     }
 }
