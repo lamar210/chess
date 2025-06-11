@@ -65,12 +65,6 @@ public class UserGameCommand {
         this.game = game;
     }
 
-    public static UserGameCommand loadGameCommand(String authToken, Integer gameID, ChessGame game) {
-        UserGameCommand command = new UserGameCommand(CommandType.LOAD_GAME, authToken, gameID);
-        command.setGame(game);
-        return command;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
