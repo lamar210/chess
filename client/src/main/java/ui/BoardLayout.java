@@ -77,7 +77,10 @@ public class BoardLayout {
     }
 
     private static String pieceSymbol(ChessPiece piece) {
-        if (piece == null) return EMPTY;
+        if (piece == null)
+        {
+            return EMPTY;
+        }
 
         boolean isWhite = piece.getTeamColor() == ChessGame.TeamColor.WHITE;
 

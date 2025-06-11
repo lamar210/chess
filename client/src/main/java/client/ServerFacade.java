@@ -186,11 +186,4 @@ public class ServerFacade {
         UserGameCommand cmd = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
         ws.sendMessage(new Gson().toJson(cmd));
     }
-
-    public void redraw(Integer gameID, ChessGame game) {
-        ServerMessage msg = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        msg.setGame(game);
-        String command = new Gson().toJson(msg);
-        ws.handleMessage(command);
-    }
 }
