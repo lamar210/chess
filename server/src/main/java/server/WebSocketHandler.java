@@ -1,6 +1,8 @@
 package server;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.GameData;
@@ -79,6 +81,12 @@ public class WebSocketHandler {
                 entry.getKey().getRemote().sendString(json);
             }
         }
+    }
+
+    private String convertToCord(ChessPosition pos) {
+        char x = (char) ('a' + pos.getColumn() - 1);
+        int y = pos.getRow();
+        return "" + x + y;
     }
 
     private record AuthAndGame(model.AuthData auth, GameData gameData) {}
@@ -166,9 +174,11 @@ public class WebSocketHandler {
         loadGame(gameData.gameID(), game);
 
         String u = Server.authDAO.getAuth(command.getAuthToken()).username();
-        String msg =  String.format("%s made a move", u);
+        ChessMove mv = command.getMove();
+        String from = convertToCord(mv.getStartPosition());
+        String to = convertToCord(mv.getEndPosition());
+        String msg =  String.format("%s moved from %s to %s", u, from, to);
         notifyOthers(session, gameData.gameID(), msg);
-
     }
 
     private void handleResign (Session session, UserGameCommand command) throws IOException, DataAccessException {
