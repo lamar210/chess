@@ -2,6 +2,11 @@ package ui;
 
 import chess.*;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static ui.EscapeSequences.*;
 
 public class BoardLayout {
@@ -19,6 +24,16 @@ public class BoardLayout {
         int[] cols = isWhiteBottom ? new int[]{1,2,3,4,5,6,7,8} : new int[]{8,7,6,5,4,3,2,1};
 
 
+        Set<ChessPosition> dest = Collections.emptySet();
+        if (highlight != null) {
+            dest = game.validMoves(highlight).stream()
+                    .map(ChessMove::getEndPosition)
+                    .collect(Collectors.toSet());
+        }
+
+        String startSpot = "\u001B[48;5;215m";
+        String destSpot = "\u001B[48;5;229m";
+
         String headerWhite = "  a     b     c    d     e     f     g     h";
         String headerBlack = "  h     g     f    e     d     c     b     a";
 
@@ -33,6 +48,16 @@ public class BoardLayout {
 
                 boolean darkSquare = (row + col) % 2 == 0;
                 String squareColor = darkSquare ? SET_BG_COLOR_BABY_GREEN : SET_BG_COLOR_WHITE;
+
+                String squareBg;
+                if (pos.equals(highlight)) {
+                    squareBg = startSpot;
+                } else if (dest.contains(pos)){
+                    squareBg = destSpot;
+                } else {
+                    squareBg = squareColor;
+                }
+
                 String pieceColor = SET_TEXT_COLOR_BLACK;
 
                 if (piece != null) {
@@ -41,7 +66,7 @@ public class BoardLayout {
                             : SET_TEXT_COLOR_DARK_GREEN + SET_TEXT_BOLD;
                 }
 
-                System.out.print(squareColor + pieceColor);
+                System.out.print(squareBg + pieceColor);
                 System.out.print(" " + pieceSymbol(piece) + " ");
                 System.out.print(RESET_BG_COLOR + RESET_TEXT_COLOR);
             }

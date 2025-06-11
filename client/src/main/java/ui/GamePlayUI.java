@@ -30,7 +30,6 @@ public class GamePlayUI {
 
 
     public void run() throws Exception {
-//        System.out.print("Connected successfully! You are connected for live gameplay");
         boolean in = true;
         while (in){
             String[] input = getInput();
