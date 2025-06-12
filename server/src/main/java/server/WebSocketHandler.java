@@ -187,6 +187,18 @@ public class WebSocketHandler {
         String to = convertToCord(mv.getEndPosition());
         String msg =  String.format("%s moved from %s to %s", u, from, to);
         notifyOthers(session, gameData.gameID(), msg);
+
+        ChessGame.TeamColor opp = playerColor == ChessGame.TeamColor.WHITE ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+
+        String oppName = (opp == ChessGame.TeamColor.WHITE ? gameData.whiteUsername() : gameData.blackUsername());
+
+        if (game.isInCheckmate(opp)) {
+            notifyAll(gameData.gameID(), oppName + " is in checkmate");
+        } else if (game.isInCheck(opp)) {
+            notifyAll(gameData.gameID(), oppName + " is in check");
+        } else if (game.isInStalemate(opp)) {
+            notifyAll(gameData.gameID(), oppName + " is in stalemate");
+        }
     }
 
     private void handleResign (Session session, UserGameCommand command) throws IOException, DataAccessException {
