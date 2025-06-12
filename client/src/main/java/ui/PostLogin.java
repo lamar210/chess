@@ -2,12 +2,9 @@ package ui;
 
 import client.ServerFacade;
 import chess.ChessGame;
-import client.WebSocket;
 import model.GameData;
-import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
-import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -89,7 +86,7 @@ public class PostLogin {
                 : ChessGame.TeamColor.BLACK;
 
         if (facade.joinGame(color, game.gameID())) {
-            GamePlayUI gameplay = new GamePlayUI(facade, game, color);
+            GamePlayUI gameplay = new GamePlayUI(facade, game, color, false);
             facade.connToWs(color, game.gameID());
             gameplay.run();
         } else {
@@ -97,7 +94,7 @@ public class PostLogin {
         }
     }
 
-    private void handleObserve(String[] input) {
+    private void handleObserve(String[] input) throws Exception {
         if (games == null || games.isEmpty()) {
             System.out.println("No games available to observe. Use 'list' first.");
             return;
@@ -125,13 +122,12 @@ public class PostLogin {
         }
 
         GameData game = gameList.get(gameIndex);
-        ChessGame observedGame = game.game();
-        observedGame.getBoard().resetBoard();
 
-        facade.connToWs(null, game.gameID());
+        GamePlayUI GP = new GamePlayUI(facade, game, ChessGame.TeamColor.WHITE, true);
 
-        BoardLayout layout = new BoardLayout(observedGame);
-        layout.displayBoard(ChessGame.TeamColor.WHITE, null);
+        facade.connToWs(ChessGame.TeamColor.WHITE, game.gameID());
+
+        GP.run();
     }
 
 

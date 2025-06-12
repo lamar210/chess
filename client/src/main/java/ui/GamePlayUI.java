@@ -2,9 +2,7 @@ package ui;
 
 import chess.*;
 import client.ServerFacade;
-import client.WebSocket;
 import model.GameData;
-import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -18,14 +16,16 @@ public class GamePlayUI {
     ChessGame.TeamColor color;
     GameData gameData;
     ChessGame game;
+    boolean isObserver;
 
-    public GamePlayUI(ServerFacade facade, GameData gameData, ChessGame.TeamColor color) {
+    public GamePlayUI(ServerFacade facade, GameData gameData, ChessGame.TeamColor color, boolean isObserver) {
         this.facade = facade;
         this.gameID = gameData.gameID();
-        this.color = color;
         this.gameData = gameData;
         this.game = gameData.game();
-        boardLayout = new BoardLayout(game);
+        this.isObserver = isObserver;
+        this.color = isObserver ? ChessGame.TeamColor.WHITE : color;
+        boardLayout = new BoardLayout(this.game);
     }
 
 

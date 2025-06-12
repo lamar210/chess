@@ -32,12 +32,6 @@ public class WebSocket extends Endpoint{
                     handleMessage(msg);
                 }
             });
-//            UserGameCommand connectedCmd = new UserGameCommand(
-//                    UserGameCommand.CommandType.CONNECT, authToken, gameID);
-//
-//            String json = new Gson().toJson(connectedCmd);
-//            sendMessage(json);
-
         } catch (URISyntaxException | DeploymentException | IOException e){
             throw new Exception("WebSocket connection failed: " + e.getMessage(), e);
         }
