@@ -128,7 +128,6 @@ public class WebSocketHandler {
         } else {
             note = String.format("%s joined the game as an observer", username);
         }
-        System.out.println("Notify others: " + note);
         notifyOthers(session, gameData.gameID(), note);
     }
 
