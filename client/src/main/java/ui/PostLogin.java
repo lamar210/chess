@@ -95,10 +95,11 @@ public class PostLogin {
     }
 
     private void handleObserve(String[] input) throws Exception {
-        if (games == null || games.isEmpty()) {
-            System.out.println("No games available to observe. Use 'list' first.");
-            return;
-        }
+        games = facade.listGames();
+            if (games.isEmpty()) {
+                System.out.println("No games available to observe.");
+                return;
+            }
 
         String inputStr;
         if (input.length == 2) {
